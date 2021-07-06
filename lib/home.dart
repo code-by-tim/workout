@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:workout/menus/homeMenu.dart';
 
 enum WhyFarther { harder, smarter }
 
@@ -12,23 +13,7 @@ class Home extends StatelessWidget {
         title: Text("Guten Abend Tim"),
         automaticallyImplyLeading: false,
         actions: [
-          PopupMenuButton(
-            icon: Icon(Icons.menu),
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              const PopupMenuItem(
-                child: ListTile(
-                  leading: Icon(Icons.add),
-                  title: Text("Workout hinzufügen"),
-                ),
-              ),
-              const PopupMenuItem(
-                child: ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text("Einstellungen"),
-                ),
-              ),
-            ],
-          )
+          HomePopUpMenu(),
         ],
       ),
     );
