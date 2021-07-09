@@ -14,27 +14,27 @@ class DBService {
   static Database? _database;
 
   final String createWorkoutTable = 'CREATE TABLE workout ('
-      'id INTEGER PRIMARY KEY AUTOINCREMENT,'
-      'name TEXT,'
-      'emoji TEXT);';
+      '${WorkoutColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
+      '${WorkoutColumn.name} TEXT,'
+      '${WorkoutColumn.emoji} TEXT);';
 
   final String createExerciseTable = 'CREATE TABLE exercise ('
-      'id INTEGER PRIMARY KEY AUTOINCREMENT,'
-      'workout INTEGER,'
-      'name TEXT,'
-      'description TEXT,'
-      'pause INTEGER,'
-      'scale INTEGER,' //0=Weight, 1=Reps, 2=Time
-      'showReps BOOLEAN,'
-      'stepSize DOUBLE,'
+      '${ExerciseColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
+      '${ExerciseColumn.workout} INTEGER,'
+      '${ExerciseColumn.name} TEXT,'
+      '${ExerciseColumn.description} TEXT,'
+      '${ExerciseColumn.pause} INTEGER,'
+      '${ExerciseColumn.scale} INTEGER,' //0=Weight, 1=Reps, 2=Time
+      '${ExerciseColumn.showReps} BOOLEAN,'
+      '${ExerciseColumn.stepSize} DOUBLE,'
       'FOREIGN KEY (workout) REFERENCES workout(id));';
 
   final String createSetTable = 'CREATE TABLE set ('
-      'id INTEGER PRIMARY KEY AUTOINCREMENT,'
-      'exercise INTEGER,'
-      'weight DOUBLE,'
-      'reps INTEGER,'
-      'duration INTEGER,'
+      '${SetColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
+      '${SetColumn.exercise} INTEGER,'
+      '${SetColumn.weight} DOUBLE,'
+      '${SetColumn.reps} INTEGER,'
+      '${SetColumn.duration} INTEGER,'
       'FOREIGN KEY (exercise) REFERENCES exercise(id));';
 
   Future<Database> get database async {
@@ -59,7 +59,7 @@ class DBService {
         .execute('$createWorkoutTable $createExerciseTable $createSetTable');
   }
 
-  Future<OPResult> insert(
+  Future<OPResult> insertWorkout(
       {required Workout workout,
       List<Exercise>? exercises,
       List<Set>? sets}) async {
