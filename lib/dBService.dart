@@ -79,7 +79,37 @@ class DBService {
       }
     }
 
-    if (workoutID.runtimeType == int) {
+    if (workoutID == 0) {
+      return OPResult.Success;
+    } else {
+      return OPResult.Error;
+    }
+  }
+
+  /// Inserts an Exercise in the database and assigns the generated and
+  /// returned ID to the exercises' id.
+  Future<OPResult> insertExercise(Exercise exercise) async {
+    final Database db = await instance.database;
+
+    int returnedID = await db.insert('exercise', exercise.toMap());
+
+    if (returnedID != 0) {
+      exercise.id = returnedID;
+      return OPResult.Success;
+    } else {
+      return OPResult.Error;
+    }
+  }
+
+  /// Inserts a Set in the database and assigns the generated and
+  /// returned ID to the sets' id.
+  Future<OPResult> insertSet(Set set) async {
+    final Database db = await instance.database;
+
+    int returnedID = await db.insert('set', set.toMap());
+
+    if (returnedID != 0) {
+      set.id = returnedID;
       return OPResult.Success;
     } else {
       return OPResult.Error;

@@ -32,6 +32,7 @@ class Exercise {
       };
 }
 
+/// Provides the names for the columns in the exercise database-table
 class ExerciseColumn {
   static final String id = 'id';
   static final String workout = 'workout';

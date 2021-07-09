@@ -21,6 +21,7 @@ class Set {
       };
 }
 
+/// Provides the names for the columns in the set database-table
 class SetColumn {
   static final String id = 'id';
   static final String exercise = 'exercise';
