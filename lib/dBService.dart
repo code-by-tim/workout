@@ -59,7 +59,8 @@ class DBService {
         .execute('$createWorkoutTable $createExerciseTable $createSetTable');
   }
 
-  Future<OPResult> insertWorkout(
+  /// Inserts a workout and optionally also its exercises and sets
+  Future<OPResult> insertCompleteWorkout(
       {required Workout workout,
       List<Exercise>? exercises,
       List<Set>? sets}) async {
@@ -79,7 +80,22 @@ class DBService {
       }
     }
 
-    if (workoutID == 0) {
+    if (workoutID != 0) {
+      return OPResult.Success;
+    } else {
+      return OPResult.Error;
+    }
+  }
+
+  /// Inserts a Workout in the database and assigns the generated and
+  /// returned ID to the workouts' id.
+  Future<OPResult> insertWorkout({required Workout workout}) async {
+    final Database db = await instance.database;
+
+    int returnedID = await db.insert('workout', workout.toMap());
+
+    if (returnedID != 0) {
+      workout.id = returnedID;
       return OPResult.Success;
     } else {
       return OPResult.Error;
@@ -114,5 +130,32 @@ class DBService {
     } else {
       return OPResult.Error;
     }
+  }
+
+  /// Returns the workout with the specified id.
+  /// If not found throws an exception
+  Future<Workout> selectWorkout(int id) async {
+    final Database db = await instance.database;
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      'workout',
+      columns: WorkoutColumn.allNames,
+      where: '${WorkoutColumn.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return Workout.fromMap(maps.first);
+    } else {
+      throw Exception('Workout with ID=$id not found');
+    }
+  }
+
+  /// Returns a list of all workouts in the database
+  Future<List<Workout>> selectAllWorkouts() async {
+    final Database db = await instance.database;
+
+    final maps = await db.query('workout');
+    return maps.map((map) => Workout.fromMap(map)).toList();
   }
 }
