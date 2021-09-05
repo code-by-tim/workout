@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:workout/pages/appSettings.dart';
+import 'package:workout/pages/editWorkout.dart';
 
 enum MenuOptions { AddWorkout, AppSettings }
 
-class HomePopUpMenu extends StatelessWidget {
-  const HomePopUpMenu({Key? key}) : super(key: key);
+class HomeMenu extends StatelessWidget {
+  const HomeMenu({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    void _handleSelection(value) {
+      switch (value) {
+        case MenuOptions.AddWorkout:
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => EditWorkout()));
+          break;
+        case MenuOptions.AppSettings:
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AppSettings()));
+          break;
+        default:
+      }
+    }
+
     return PopupMenuButton(
       icon: Icon(Icons.menu),
       onSelected: _handleSelection,
@@ -27,15 +43,5 @@ class HomePopUpMenu extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void _handleSelection(value) {
-    switch (value) {
-      case MenuOptions.AddWorkout:
-        break;
-      case MenuOptions.AppSettings:
-        break;
-      default:
-    }
   }
 }

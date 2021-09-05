@@ -13,7 +13,7 @@ class Home extends StatelessWidget {
         title: Text("Guten Abend Tim"),
         automaticallyImplyLeading: false,
         actions: [
-          HomePopUpMenu(),
+          HomeMenu(),
         ],
       ),
     );
