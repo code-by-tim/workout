@@ -5,10 +5,10 @@ class Workout {
 
   int? id;
   String name;
-  Icons iconID;
+  IconData iconID;
 
   /// Returns a copy of the workout with the specified parameters changed
-  Workout copyModify({int? id, String? name, Icons? iconID}) => Workout(
+  Workout copyModify({int? id, String? name, IconData? iconID}) => Workout(
       id: id ?? this.id,
       name: name ?? this.name,
       iconID: iconID ?? this.iconID);
@@ -22,7 +22,7 @@ class Workout {
   static Workout fromMap(Map<String, Object?> map) => Workout(
         id: map[WorkoutColumn.id] as int?,
         name: map[WorkoutColumn.name] as String,
-        iconID: map[WorkoutColumn.emoji] as Icons,
+        iconID: map[WorkoutColumn.emoji] as IconData,
       );
 }
 
