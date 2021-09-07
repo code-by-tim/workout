@@ -13,12 +13,12 @@ class DBService {
   static DBService instance = DBService();
   static Database? _database;
 
-  final String createWorkoutTable = 'CREATE TABLE workout ('
+  final String _createWorkoutTable = 'CREATE TABLE workout ('
       '${WorkoutColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
       '${WorkoutColumn.name} TEXT,'
       '${WorkoutColumn.emoji} TEXT);';
 
-  final String createExerciseTable = 'CREATE TABLE exercise ('
+  final String _createExerciseTable = 'CREATE TABLE exercise ('
       '${ExerciseColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
       '${ExerciseColumn.workout} INTEGER,'
       '${ExerciseColumn.name} TEXT,'
@@ -29,7 +29,7 @@ class DBService {
       '${ExerciseColumn.stepSize} DOUBLE,'
       'FOREIGN KEY (workout) REFERENCES workout(id));';
 
-  final String createSetTable = 'CREATE TABLE set ('
+  final String _createSetTable = 'CREATE TABLE set ('
       '${SetColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
       '${SetColumn.exercise} INTEGER,'
       '${SetColumn.weight} DOUBLE,'
@@ -56,27 +56,21 @@ class DBService {
 
   Future _createDB(Database db, int version) {
     return db
-        .execute('$createWorkoutTable $createExerciseTable $createSetTable');
+        .execute('$_createWorkoutTable $_createExerciseTable $_createSetTable');
   }
 
-  /// Inserts a workout and optionally also its exercises and sets
-  Future<OPResult> insertCompleteWorkout(
-      {required Workout workout,
-      List<Exercise>? exercises,
-      List<Set>? sets}) async {
+// CREATE Functions ------------------------------------------------------------
+  /// Inserts a workout and optionally also its exercises
+  Future<OPResult> createWorkout(
+      {required Workout workout, List<Exercise>? exercises}) async {
     final Database db = await instance.database;
 
     int workoutID = await db.insert('workout', workout.toMap());
 
-    if (exercises != null) {
+    if (exercises != null && workoutID != 0) {
       for (Exercise exercise in exercises) {
+        exercise.workoutFK = workoutID;
         await db.insert('exercise', exercise.toMap());
-      }
-    }
-
-    if (sets != null) {
-      for (Set set in sets) {
-        await db.insert('set', set.toMap());
       }
     }
 
@@ -87,24 +81,9 @@ class DBService {
     }
   }
 
-  /// Inserts a Workout in the database and assigns the generated and
-  /// returned ID to the workouts' id.
-  Future<OPResult> insertWorkout({required Workout workout}) async {
-    final Database db = await instance.database;
-
-    int returnedID = await db.insert('workout', workout.toMap());
-
-    if (returnedID != 0) {
-      workout.id = returnedID;
-      return OPResult.Success;
-    } else {
-      return OPResult.Error;
-    }
-  }
-
   /// Inserts an Exercise in the database and assigns the generated and
   /// returned ID to the exercises' id.
-  Future<OPResult> insertExercise(Exercise exercise) async {
+  Future<OPResult> createExercise(Exercise exercise) async {
     final Database db = await instance.database;
 
     int returnedID = await db.insert('exercise', exercise.toMap());
@@ -119,7 +98,7 @@ class DBService {
 
   /// Inserts a Set in the database and assigns the generated and
   /// returned ID to the sets' id.
-  Future<OPResult> insertSet(Set set) async {
+  Future<OPResult> createSet(Set set) async {
     final Database db = await instance.database;
 
     int returnedID = await db.insert('set', set.toMap());
@@ -132,9 +111,11 @@ class DBService {
     }
   }
 
+// READ Functions --------------------------------------------------------------
+  /// Needed
   /// Returns the workout with the specified id.
   /// If not found throws an exception
-  Future<Workout> selectWorkout(int id) async {
+  Future<Workout> readWorkout(int id) async {
     final Database db = await instance.database;
 
     final List<Map<String, dynamic>> maps = await db.query(
@@ -151,8 +132,29 @@ class DBService {
     }
   }
 
+  Future<List<Exercise>> readExercisesOfWorkout(int workoutID) async {
+    final Database db = await instance.database;
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      'exercise',
+      columns: ExerciseColumn.allNames,
+      where: '${ExerciseColumn.workout} = ?',
+      whereArgs: [workoutID],
+    );
+
+    if (maps.isNotEmpty) {
+      List<Exercise> exercises = [];
+      maps.forEach((map) {
+        exercises.add(Exercise.fromMap(map));
+      });
+      return exercises;
+    } else {
+      throw Exception('Exercises of workout with ID=$workoutID not found');
+    }
+  }
+
   /// Returns a list of all workouts in the database
-  Future<List<Workout>> selectAllWorkouts() async {
+  Future<List<Workout>> readAllWorkouts() async {
     final Database db = await instance.database;
 
     final maps = await db.query('workout');

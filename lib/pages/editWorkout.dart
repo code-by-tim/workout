@@ -1,22 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:workout/dBService.dart';
+import 'package:workout/model/exercise.dart';
+import 'package:workout/model/workout.dart';
 
 class EditWorkout extends StatefulWidget {
-  const EditWorkout({Key? key}) : super(key: key);
+  final int workoutID;
+
+  /// Pass a negative value to the constructor when a new workout should be created
+  const EditWorkout({Key? key, required this.workoutID}) : super(key: key);
 
   @override
   _EditWorkoutState createState() => _EditWorkoutState();
 }
 
 class _EditWorkoutState extends State<EditWorkout> {
-  List _exerciseControllers = [];
+  late Workout _workout;
+  late List<Exercise> _exercises;
+
+  TextEditingController _titleController = new TextEditingController();
+  List<TextEditingController> _exerciseControllers = [];
+
+  bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
 
   @override
+  initState() {
+    super.initState();
+    loadWorkout();
+    print(Scale.Weight);
+  }
+
+  /// Initializes the workout and exercises variables as well as the controllers
+  Future loadWorkout() async {
+    setState(() => _isLoading = true);
+
+    if (widget.workoutID < 0) {
+      this._workout = new Workout(name: "", iconID: Icons.fitness_center);
+      this._exercises = [];
+    } else {
+      this._workout = await DBService.instance.readWorkout(widget.workoutID);
+      try {
+        this._exercises =
+            await DBService.instance.readExercisesOfWorkout(widget.workoutID);
+      } catch (e) {}
+    }
+
+    _titleController.text = _workout.name;
+    _exercises.forEach((exercise) {
+      _exerciseControllers.add(new TextEditingController(text: exercise.name));
+    });
+    setState(() => _isLoading = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton:
-          IconButton(onPressed: _addExercise, icon: Icon(Icons.add)),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
@@ -25,58 +64,58 @@ class _EditWorkoutState extends State<EditWorkout> {
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.cancel)),
-          IconButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  //Save the workout in the db and return to homescreen
-                }
-              },
-              icon: Icon(Icons.save))
+          IconButton(onPressed: safeWorkout, icon: Icon(Icons.save))
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            // Workout title
-            TextFormField(
-              style: TextStyle(fontSize: 30),
-              decoration: const InputDecoration(hintText: 'New workout'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a workout name';
-                }
-                return null;
-              },
-            ),
-            // Give note when no exercises yet
-            _exerciseControllers.length == 0
-                ? Expanded(
-                    child: Center(
-                      child:
-                          Text("No exercises created yet. Click + to add one."),
-                    ),
-                  )
-                :
-                // Exercises
-                Expanded(
-                    child: ReorderableListView.builder(
-                      itemBuilder: _buildExerciseListTile,
-                      itemCount: _exerciseControllers.length,
-                      onReorder: (int oldIndex, int newIndex) {
-                        setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
-                          var item = _exerciseControllers.removeAt(oldIndex);
-                          _exerciseControllers.insert(newIndex, item);
-                        });
-                      },
-                    ),
+      floatingActionButton:
+          FloatingActionButton(onPressed: _addExercise, child: Icon(Icons.add)),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  // Workout title
+                  TextFormField(
+                    controller: _titleController,
+                    style: TextStyle(fontSize: 30),
+                    decoration: const InputDecoration(hintText: 'New workout'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a workout name';
+                      }
+                      return null;
+                    },
                   ),
-          ],
-        ),
-      ),
+                  // Give note when no exercises yet
+                  _exerciseControllers.length == 0
+                      ? Expanded(
+                          child: Center(
+                            child: Text(
+                                "No exercises created yet. Click + to add one."),
+                          ),
+                        )
+                      :
+                      // Exercises
+                      Expanded(
+                          child: ReorderableListView.builder(
+                            itemBuilder: _buildExerciseListTile,
+                            itemCount: _exerciseControllers.length,
+                            onReorder: (int oldIndex, int newIndex) {
+                              setState(() {
+                                if (oldIndex < newIndex) {
+                                  newIndex -= 1;
+                                }
+                                var item =
+                                    _exerciseControllers.removeAt(oldIndex);
+                                _exerciseControllers.insert(newIndex, item);
+                              });
+                            },
+                          ),
+                        ),
+                ],
+              ),
+            ),
     );
   }
 
@@ -126,8 +165,34 @@ class _EditWorkoutState extends State<EditWorkout> {
 
   /// Adds one element to _exerciseControllers
   void _addExercise() {
+    if (_isLoading) return;
     setState(() {
       _exerciseControllers.add(TextEditingController());
     });
+  }
+
+  /// Safes the given workout to the database
+  void safeWorkout() {
+    if (_isLoading) return;
+
+    if (_formKey.currentState!.validate()) {
+      _workout.name = _titleController.text;
+
+      // Create exercises
+      for (var i = 0; i < _exerciseControllers.length; i++) {
+        if (i >= _exercises.length) {
+          _exercises.add(new Exercise(
+              name: _exerciseControllers[i].text,
+              description: "",
+              pause: 120,
+              scale: Scale.Weight,
+              showReps: false,
+              stepSize: 0.25));
+        }
+      }
+
+      DBService.instance
+          .createWorkout(workout: _workout, exercises: _exercises);
+    }
   }
 }

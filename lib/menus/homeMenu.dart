@@ -13,7 +13,9 @@ class HomeMenu extends StatelessWidget {
       switch (value) {
         case MenuOptions.AddWorkout:
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => EditWorkout()));
+              context,
+              MaterialPageRoute(
+                  builder: (context) => EditWorkout(workoutID: -1)));
           break;
         case MenuOptions.AppSettings:
           Navigator.push(

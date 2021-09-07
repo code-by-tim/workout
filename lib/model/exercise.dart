@@ -5,7 +5,7 @@ enum Scale { Weight, Reps, Time }
 class Exercise {
   Exercise(
       {this.id,
-      required this.workoutFK,
+      this.workoutFK,
       required this.name,
       required this.description,
       required this.pause,
@@ -14,7 +14,7 @@ class Exercise {
       required this.stepSize});
 
   int? id;
-  int workoutFK;
+  int? workoutFK;
   String name;
   String description;
   int pause;
@@ -48,7 +48,7 @@ class Exercise {
         ExerciseColumn.name: name,
         ExerciseColumn.description: description,
         ExerciseColumn.pause: pause,
-        ExerciseColumn.scale: scale,
+        ExerciseColumn.scale: scale.index,
         ExerciseColumn.showReps: showReps,
         ExerciseColumn.stepSize: stepSize,
       };
