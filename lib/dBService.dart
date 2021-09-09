@@ -13,12 +13,11 @@ class DBService {
   static DBService instance = DBService();
   static Database? _database;
 
-  final String _createWorkoutTable = 'CREATE TABLE workout ('
+  final String _createWorkoutTable = ' CREATE TABLE workout ('
       '${WorkoutColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
-      '${WorkoutColumn.name} TEXT,'
-      '${WorkoutColumn.emoji} TEXT);';
+      '${WorkoutColumn.name} TEXT);';
 
-  final String _createExerciseTable = 'CREATE TABLE exercise ('
+  final String _createExerciseTable = ' CREATE TABLE exercise ('
       '${ExerciseColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
       '${ExerciseColumn.workout} INTEGER,'
       '${ExerciseColumn.name} TEXT,'
@@ -29,7 +28,7 @@ class DBService {
       '${ExerciseColumn.stepSize} DOUBLE,'
       'FOREIGN KEY (workout) REFERENCES workout(id));';
 
-  final String _createSetTable = 'CREATE TABLE set ('
+  final String _createSetTable = ' CREATE TABLE setW ('
       '${SetColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
       '${SetColumn.exercise} INTEGER,'
       '${SetColumn.weight} DOUBLE,'
@@ -55,8 +54,9 @@ class DBService {
   }
 
   Future _createDB(Database db, int version) {
-    return db
-        .execute('$_createWorkoutTable $_createExerciseTable $_createSetTable');
+    db.execute('$_createWorkoutTable');
+    db.execute('$_createExerciseTable');
+    return db.execute('$_createSetTable');
   }
 
 // CREATE Functions ------------------------------------------------------------

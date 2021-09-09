@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 
 class Workout {
-  Workout({this.id, required this.name, required this.iconID});
+  Workout({this.id, required this.name});
 
   int? id;
   String name;
-  IconData iconID;
 
   /// Returns a copy of the workout with the specified parameters changed
-  Workout copyModify({int? id, String? name, IconData? iconID}) => Workout(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      iconID: iconID ?? this.iconID);
+  Workout copyModify({int? id, String? name, IconData? iconID}) =>
+      Workout(id: id ?? this.id, name: name ?? this.name);
 
   Map<String, Object?> toMap() => {
         WorkoutColumn.id: id,
         WorkoutColumn.name: name,
-        WorkoutColumn.emoji: iconID.toString(),
       };
 
   static Workout fromMap(Map<String, Object?> map) => Workout(
         id: map[WorkoutColumn.id] as int?,
         name: map[WorkoutColumn.name] as String,
-        iconID: map[WorkoutColumn.emoji] as IconData,
       );
 }
 

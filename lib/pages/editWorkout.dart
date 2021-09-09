@@ -28,7 +28,6 @@ class _EditWorkoutState extends State<EditWorkout> {
   initState() {
     super.initState();
     loadWorkout();
-    print(Scale.Weight);
   }
 
   /// Initializes the workout and exercises variables as well as the controllers
@@ -36,7 +35,7 @@ class _EditWorkoutState extends State<EditWorkout> {
     setState(() => _isLoading = true);
 
     if (widget.workoutID < 0) {
-      this._workout = new Workout(name: "", iconID: Icons.fitness_center);
+      this._workout = new Workout(name: "");
       this._exercises = [];
     } else {
       this._workout = await DBService.instance.readWorkout(widget.workoutID);
