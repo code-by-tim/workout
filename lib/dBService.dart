@@ -20,6 +20,7 @@ class DBService {
   final String _createExerciseTable = ' CREATE TABLE exercise ('
       '${ExerciseColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT,'
       '${ExerciseColumn.workout} INTEGER,'
+      '${ExerciseColumn.controlledByUser} BOOLEAN,'
       '${ExerciseColumn.name} TEXT,'
       '${ExerciseColumn.description} TEXT,'
       '${ExerciseColumn.pause} INTEGER,'
@@ -50,13 +51,63 @@ class DBService {
       version: 1,
       onCreate: _createDB,
     );
+
     return db;
   }
 
-  Future _createDB(Database db, int version) {
-    db.execute('$_createWorkoutTable');
-    db.execute('$_createExerciseTable');
+  Future _createDB(Database db, int version) async {
+    await db.execute('$_createWorkoutTable');
+    await db.execute('$_createExerciseTable');
     return db.execute('$_createSetTable');
+  }
+
+  /// Creates default workout with Exercises and Sets
+  Future _createDefaultData() {
+    Workout upperBody = new Workout(name: 'Upper Body');
+    List<Exercise> upperBodyExercises = [];
+    upperBodyExercises.add(new Exercise(
+        name: 'Bizeps-Curls',
+        description: "",
+        pause: 120,
+        scale: Scale.Weight,
+        showReps: false,
+        stepSize: 0.25));
+    upperBodyExercises.add(new Exercise(
+        name: 'Pull-Ups',
+        description: "",
+        pause: 120,
+        scale: Scale.Weight,
+        showReps: false,
+        stepSize: 0.25));
+    upperBodyExercises.add(new Exercise(
+        name: 'Bench-Press',
+        description: "",
+        pause: 120,
+        scale: Scale.Weight,
+        showReps: false,
+        stepSize: 0.25));
+
+    Workout lowerBody = new Workout(name: 'Lower Body');
+    List<Exercise> lowerBodyExercises = [];
+    lowerBodyExercises.add(new Exercise(
+        name: 'Squats',
+        description: "",
+        pause: 120,
+        scale: Scale.Weight,
+        showReps: false,
+        stepSize: 0.25));
+    lowerBodyExercises.add(new Exercise(
+        name: 'Box jumps',
+        description: "",
+        pause: 120,
+        scale: Scale.Weight,
+        showReps: false,
+        stepSize: 0.25));
+
+    this.createWorkout(workout: upperBody, exercises: upperBodyExercises);
+    print("First workout created");
+    return this
+        .createWorkout(workout: lowerBody, exercises: lowerBodyExercises);
   }
 
 // CREATE Functions ------------------------------------------------------------
@@ -156,7 +207,6 @@ class DBService {
   /// Returns a list of all workouts in the database
   Future<List<Workout>> readAllWorkouts() async {
     final Database db = await instance.database;
-
     final maps = await db.query('workout');
     return maps.map((map) => Workout.fromMap(map)).toList();
   }

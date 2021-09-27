@@ -147,6 +147,8 @@ class _EditWorkoutState extends State<EditWorkout> {
               ),
             ),
             SizedBox(width: 15),
+            Icon(Icons.tune),
+            SizedBox(width: 15),
             IconButton(
                 onPressed: () {
                   setState(() {
@@ -193,5 +195,6 @@ class _EditWorkoutState extends State<EditWorkout> {
       DBService.instance
           .createWorkout(workout: _workout, exercises: _exercises);
     }
+    Navigator.pop(context);
   }
 }

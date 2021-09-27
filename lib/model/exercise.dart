@@ -1,11 +1,10 @@
-import 'package:workout/model/set.dart';
-
 enum Scale { Weight, Reps, Time }
 
 class Exercise {
   Exercise(
       {this.id,
       this.workoutFK,
+      this.controlledByUser = false,
       required this.name,
       required this.description,
       required this.pause,
@@ -15,6 +14,7 @@ class Exercise {
 
   int? id;
   int? workoutFK;
+  bool controlledByUser;
   String name;
   String description;
   int pause;
@@ -26,6 +26,7 @@ class Exercise {
   Exercise copyModify({
     int? id,
     int? workoutFK,
+    bool? controlledByUser,
     String? name,
     String? description,
     int? pause,
@@ -35,6 +36,7 @@ class Exercise {
   }) =>
       Exercise(
           workoutFK: workoutFK ?? this.workoutFK,
+          controlledByUser: controlledByUser ?? this.controlledByUser,
           name: name ?? this.name,
           description: description ?? this.description,
           pause: pause ?? this.pause,
@@ -45,6 +47,7 @@ class Exercise {
   Map<String, Object?> toMap() => {
         ExerciseColumn.id: id,
         ExerciseColumn.workout: workoutFK,
+        ExerciseColumn.controlledByUser: controlledByUser,
         ExerciseColumn.name: name,
         ExerciseColumn.description: description,
         ExerciseColumn.pause: pause,
@@ -54,8 +57,9 @@ class Exercise {
       };
 
   static Exercise fromMap(Map<String, Object?> map) => Exercise(
-      id: map[SetColumn.id] as int?,
+      id: map[ExerciseColumn.id] as int?,
       workoutFK: map[ExerciseColumn.workout] as int,
+      controlledByUser: map[ExerciseColumn.controlledByUser] as bool,
       name: map[ExerciseColumn.name] as String,
       description: map[ExerciseColumn.description] as String,
       pause: map[ExerciseColumn.pause] as int,
@@ -68,6 +72,7 @@ class Exercise {
 class ExerciseColumn {
   static final String id = 'id';
   static final String workout = 'workout';
+  static final String controlledByUser = 'controlledByUser';
   static final String name = 'name';
   static final String description = 'description';
   static final String pause = 'pause';
@@ -78,6 +83,7 @@ class ExerciseColumn {
   static final List<String> allNames = [
     id,
     workout,
+    controlledByUser,
     name,
     description,
     pause,
