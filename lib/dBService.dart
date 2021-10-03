@@ -62,7 +62,6 @@ class DBService {
     return db.execute('$_createSetTable');
   }
 
-// Create default data with db.execute
   /// Creates default workout with Exercises and Sets
   void _createDefaultData(Database db) async {
     List<Exercise> upperBodyExercises = [];

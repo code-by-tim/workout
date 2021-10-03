@@ -63,9 +63,20 @@ class Exercise {
       name: map[ExerciseColumn.name] as String,
       description: map[ExerciseColumn.description] as String,
       pause: map[ExerciseColumn.pause] as int,
-      scale: map[ExerciseColumn.scale] as Scale,
+      scale: _getScaleFromNumber(map[ExerciseColumn.scale] as int),
       showReps: map[ExerciseColumn.showReps] == 1,
       stepSize: map[ExerciseColumn.stepSize] as double);
+}
+
+Scale _getScaleFromNumber(int num) {
+  switch (num) {
+    case 0:
+      return Scale.Weight;
+    case 1:
+      return Scale.Reps;
+    default:
+      return Scale.Time;
+  }
 }
 
 /// Provides the names for the columns in the exercise database-table
