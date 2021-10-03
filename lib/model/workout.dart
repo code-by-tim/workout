@@ -25,7 +25,6 @@ class Workout {
 class WorkoutColumn {
   static final String id = 'id';
   static final String name = 'name';
-  static final String emoji = 'emoji';
 
-  static final List<String> allNames = [id, name, emoji];
+  static final List<String> allNames = [id, name];
 }

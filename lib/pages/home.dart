@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:workout/dBService.dart';
 import 'package:workout/menus/homeMenu.dart';
 import 'package:workout/model/workout.dart';
+import 'package:workout/widgets/workoutTile.dart';
 
 enum WhyFarther { harder, smarter }
 
@@ -46,29 +47,18 @@ class _HomeState extends State<Home> {
           ? Center(child: CircularProgressIndicator())
           : workouts.isEmpty
               ? Center(child: Text('No workouts yet'))
-              : SingleChildScrollView(
-                  child: ExpansionPanelList.radio(
-                    dividerColor: Color.fromARGB(255, 66, 165, 245),
-                    expandedHeaderPadding: EdgeInsets.fromLTRB(5, 0, 20, 0),
-                    children: _buildWorkoutTiles(),
-                  ),
+              : ListView(
+                  children: _buildWorkoutTiles(),
                 ),
     );
   }
 
-  /// Returns a list of expansion panels with the workouts
-  List<ExpansionPanel> _buildWorkoutTiles() {
-    print('WorkoutTiles generated');
-    List<ExpansionPanel> _workoutTiles = [];
-    int identifier = -1;
+  /// Returns a list of WorkoutTiles
+  List<WorkoutTile> _buildWorkoutTiles() {
+    List<WorkoutTile> _workoutTiles = [];
 
     workouts.forEach((workout) {
-      _workoutTiles.add(ExpansionPanelRadio(
-          value: ++identifier,
-          headerBuilder: (BuildContext context, bool isExpanded) {
-            return ListTile(title: Text('${workout.name}'));
-          },
-          body: Card(child: Text("Its expanded"))));
+      _workoutTiles.add(WorkoutTile(workout: workout));
     });
     return _workoutTiles;
   }

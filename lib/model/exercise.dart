@@ -47,24 +47,24 @@ class Exercise {
   Map<String, Object?> toMap() => {
         ExerciseColumn.id: id,
         ExerciseColumn.workout: workoutFK,
-        ExerciseColumn.controlledByUser: controlledByUser,
+        ExerciseColumn.controlledByUser: controlledByUser ? 1 : 0,
         ExerciseColumn.name: name,
         ExerciseColumn.description: description,
         ExerciseColumn.pause: pause,
         ExerciseColumn.scale: scale.index,
-        ExerciseColumn.showReps: showReps,
+        ExerciseColumn.showReps: showReps ? 1 : 0,
         ExerciseColumn.stepSize: stepSize,
       };
 
   static Exercise fromMap(Map<String, Object?> map) => Exercise(
       id: map[ExerciseColumn.id] as int?,
       workoutFK: map[ExerciseColumn.workout] as int,
-      controlledByUser: map[ExerciseColumn.controlledByUser] as bool,
+      controlledByUser: map[ExerciseColumn.controlledByUser] == 1,
       name: map[ExerciseColumn.name] as String,
       description: map[ExerciseColumn.description] as String,
       pause: map[ExerciseColumn.pause] as int,
       scale: map[ExerciseColumn.scale] as Scale,
-      showReps: map[ExerciseColumn.showReps] as bool,
+      showReps: map[ExerciseColumn.showReps] == 1,
       stepSize: map[ExerciseColumn.stepSize] as double);
 }
 

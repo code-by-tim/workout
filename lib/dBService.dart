@@ -58,12 +58,13 @@ class DBService {
   Future _createDB(Database db, int version) async {
     await db.execute('$_createWorkoutTable');
     await db.execute('$_createExerciseTable');
+    _createDefaultData(db);
     return db.execute('$_createSetTable');
   }
 
+// Create default data with db.execute
   /// Creates default workout with Exercises and Sets
-  Future _createDefaultData() {
-    Workout upperBody = new Workout(name: 'Upper Body');
+  void _createDefaultData(Database db) async {
     List<Exercise> upperBodyExercises = [];
     upperBodyExercises.add(new Exercise(
         name: 'Bizeps-Curls',
@@ -87,7 +88,6 @@ class DBService {
         showReps: false,
         stepSize: 0.25));
 
-    Workout lowerBody = new Workout(name: 'Lower Body');
     List<Exercise> lowerBodyExercises = [];
     lowerBodyExercises.add(new Exercise(
         name: 'Squats',
@@ -104,10 +104,21 @@ class DBService {
         showReps: false,
         stepSize: 0.25));
 
-    this.createWorkout(workout: upperBody, exercises: upperBodyExercises);
-    print("First workout created");
-    return this
-        .createWorkout(workout: lowerBody, exercises: lowerBodyExercises);
+    int workoutIDOne = await db
+        .rawInsert('INSERT INTO workout(id, name) VALUES(NULL, "Upper Body");');
+    upperBodyExercises.forEach((exercise) {
+      db.rawInsert(
+          'INSERT INTO exercise(${ExerciseColumn.allNames.toString().replaceAll(RegExp('(\\[|\\])'), "")}) '
+          'VALUES(NULL, $workoutIDOne, 0, "${exercise.name}", "${exercise.description}", ${exercise.pause}, 0, 0, 0.25)');
+    });
+
+    int workoutIDTwo = await db
+        .rawInsert('INSERT INTO workout(id, name) VALUES(NULL, "Lower Body")');
+    lowerBodyExercises.forEach((exercise) {
+      db.rawInsert(
+          'INSERT INTO exercise(${ExerciseColumn.allNames.toString().replaceAll(RegExp('(\\[|\\])'), "")}) '
+          'VALUES(NULL, $workoutIDTwo, 0, "${exercise.name}", "${exercise.description}", ${exercise.pause}, 0, 0, 0.25)');
+    });
   }
 
 // CREATE Functions ------------------------------------------------------------
