@@ -1,3 +1,5 @@
+import 'package:workout/model/set.dart';
+
 enum Scale { Weight, Reps, Time }
 
 class Exercise {
@@ -21,6 +23,9 @@ class Exercise {
   Scale scale;
   bool showReps;
   double stepSize;
+
+  //This attribute is not safed in the db
+  List<Set> sets = [];
 
   /// Returns a copy of the exercise with the specified parameters changed
   Exercise copyModify({

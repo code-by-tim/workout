@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:workout/model/exercise.dart';
 
 class Workout {
   Workout({this.id, required this.name});
 
   int? id;
   String name;
+
+  //These attributes are not safed in the db
+  List<Exercise> exercise = [];
+  int curExPosition = 0;
 
   /// Returns a copy of the workout with the specified parameters changed
   Workout copyModify({int? id, String? name, IconData? iconID}) =>

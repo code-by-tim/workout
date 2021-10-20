@@ -12,6 +12,9 @@ class Set {
   int reps;
   int duration;
 
+  //This attribute is not safed in the db
+  bool isDone = false;
+
   /// Returns a copy of the set with the specified parameters changed
   Set copyModify(
           {int? id,
