@@ -214,6 +214,26 @@ class DBService {
     }
   }
 
+  Future<List<Set>> readSetsOfExercise(int exerciseID) async {
+    final Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'setW',
+      columns: SetColumn.allNames,
+      where: '${SetColumn.exercise} = ?',
+      whereArgs: [exerciseID],
+    );
+
+    if (maps.isNotEmpty) {
+      List<Set> sets = [];
+      maps.forEach((map) {
+        sets.add(Set.fromMap(map));
+      });
+      return sets;
+    } else {
+      throw Exception('Sets of exercise with ID=$exerciseID not found');
+    }
+  }
+
   /// Returns a list of all workouts in the database
   Future<List<Workout>> readAllWorkouts() async {
     final Database db = await instance.database;

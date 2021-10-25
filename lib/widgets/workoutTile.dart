@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:workout/dBService.dart';
 import 'package:workout/model/exercise.dart';
+import 'package:workout/model/sessionModel.dart';
 import 'package:workout/model/workout.dart';
 import 'package:workout/pages/exerciseView.dart';
 
@@ -79,7 +81,8 @@ class _WorkoutTileState extends State<WorkoutTile> {
     }
   }
 
-  /// Returns the bottom part of a workout Tile (The part, that is only visible when extended)
+  /// Returns the bottom part of a workout Tile (The part, that is only visible when extended).
+  /// Handles navigation to the exerciseView
   List<Widget> _getExtendedPart() {
     List<Widget> extensionBody = [
       Divider(indent: 75, endIndent: 75, thickness: 2, color: Colors.white)
@@ -88,6 +91,11 @@ class _WorkoutTileState extends State<WorkoutTile> {
     exercises!.forEach((exercise) {
       extensionBody.add(GestureDetector(
         onTap: () {
+          // updated SessionModel and push ExerciseView
+          assert(exercise.workoutFK != null);
+          assert(exercise.id != null);
+          Provider.of<SessionModel>(context, listen: false)
+              .initializeFullWorkoutModel(exercise.workoutFK!, exercise.id);
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => ExerciseView()));
         },

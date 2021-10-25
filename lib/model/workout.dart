@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:workout/dBService.dart';
 import 'package:workout/model/exercise.dart';
 
 class Workout {
@@ -8,8 +9,15 @@ class Workout {
   String name;
 
   //These attributes are not safed in the db
-  List<Exercise> exercise = [];
+  List<Exercise> exercises = [];
   int curExPosition = 0;
+
+  // assigns the exercises of this workout to the exercises variable
+  // in the correct order
+  Future<List<Exercise>> initializeExercises() async {
+    assert(this.id != null);
+    return DBService.instance.readExercisesOfWorkout(id!);
+  }
 
   /// Returns a copy of the workout with the specified parameters changed
   Workout copyModify({int? id, String? name, IconData? iconID}) =>

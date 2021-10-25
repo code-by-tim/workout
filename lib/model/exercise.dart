@@ -1,3 +1,4 @@
+import 'package:workout/dBService.dart';
 import 'package:workout/model/set.dart';
 
 enum Scale { Weight, Reps, Time }
@@ -26,6 +27,13 @@ class Exercise {
 
   //This attribute is not safed in the db
   List<Set> sets = [];
+
+  // assigns the sets of this exercise to the sets variable
+  // in the correct order
+  Future<List<Set>> initializeSets() async {
+    assert(this.id != null);
+    return DBService.instance.readSetsOfExercise(id!);
+  }
 
   /// Returns a copy of the exercise with the specified parameters changed
   Exercise copyModify({
