@@ -4,7 +4,12 @@ import 'package:workout/model/sessionModel.dart';
 import 'package:workout/pages/home.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => SessionModel(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,10 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.dark(),
-      home: ChangeNotifierProvider(
-        create: (context) => SessionModel(),
-        child: Home(),
-      ),
+      home: Home(),
     );
   }
 }

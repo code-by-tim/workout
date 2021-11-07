@@ -8,11 +8,11 @@ class ExerciseView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-          child: Text(Provider.of<SessionModel>(context, listen: false)
-              .currentWorkoutID
-              .toString())),
-    );
+        appBar: AppBar(),
+        body: Center(
+          child: Consumer<SessionModel>(
+            builder: (_, model, __) => Text(model.currentWorkoutID.toString()),
+          ),
+        ));
   }
 }
