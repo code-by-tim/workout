@@ -5,17 +5,21 @@ import 'package:workout/pages/editWorkout.dart';
 enum MenuOptions { AddWorkout, AppSettings }
 
 class HomeMenu extends StatelessWidget {
-  const HomeMenu({Key? key}) : super(key: key);
+  const HomeMenu({Key? key, required this.refreshWorkouts}) : super(key: key);
+
+  final Future<dynamic> Function() refreshWorkouts;
 
   @override
   Widget build(BuildContext context) {
-    void _handleSelection(value) {
+    void _handleSelection(value) async {
       switch (value) {
         case MenuOptions.AddWorkout:
-          Navigator.push(
+          await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => EditWorkout(workoutID: -1)));
+          refreshWorkouts();
+          print("refreshWorkouts called");
           break;
         case MenuOptions.AppSettings:
           Navigator.push(

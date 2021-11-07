@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:workout/dBService.dart';
+import 'package:provider/provider.dart';
 import 'package:workout/menus/homeMenu.dart';
-import 'package:workout/model/workout.dart';
+import 'package:workout/model/sessionModel.dart';
 import 'package:workout/widgets/workoutTile.dart';
-
-enum WhyFarther { harder, smarter }
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,8 +12,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late List<Workout> workouts;
-
   bool isLoading = false;
 
   @override
@@ -28,7 +24,8 @@ class _HomeState extends State<Home> {
   Future refreshWorkouts() async {
     setState(() => isLoading = true);
 
-    this.workouts = await DBService.instance.readAllWorkouts();
+    await Provider.of<SessionModel>(context, listen: false).loadWorkouts();
+    print("executed");
 
     setState(() => isLoading = false);
   }
@@ -40,12 +37,14 @@ class _HomeState extends State<Home> {
         title: Text("Guten Abend Tim"),
         automaticallyImplyLeading: false,
         actions: [
-          HomeMenu(),
+          HomeMenu(
+            refreshWorkouts: refreshWorkouts,
+          ),
         ],
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : workouts.isEmpty
+          : Provider.of<SessionModel>(context).workouts.isEmpty
               ? Center(child: Text('No workouts yet'))
               : ListView(
                   children: _buildWorkoutTiles(),
@@ -57,7 +56,7 @@ class _HomeState extends State<Home> {
   List<WorkoutTile> _buildWorkoutTiles() {
     List<WorkoutTile> _workoutTiles = [];
 
-    workouts.forEach((workout) {
+    Provider.of<SessionModel>(context).workouts.forEach((workout) {
       _workoutTiles.add(WorkoutTile(workout: workout));
     });
     return _workoutTiles;

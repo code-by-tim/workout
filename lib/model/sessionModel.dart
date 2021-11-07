@@ -3,7 +3,7 @@ import 'package:workout/dBService.dart';
 import 'package:workout/model/workout.dart';
 
 class SessionModel extends ChangeNotifier {
-  List<Workout> activeWorkouts = [];
+  List<Workout> workouts = [];
   int currentWorkoutID = -1;
 
   /// Initializes the workout with its exercises and
@@ -13,10 +13,16 @@ class SessionModel extends ChangeNotifier {
       [int? wantedExerciseID]) async {
     currentWorkoutID = workoutID;
     Workout workout = await DBService.instance.readWorkout(workoutID);
-    activeWorkouts.add(workout);
+    workouts.add(workout);
     await workout.initializeExercises();
     workout.exercises.forEach((exercise) {
       exercise.initializeSets();
     });
+  }
+
+  /// Loads all workouts from the db and saves them in SessionModel.workouts
+  Future loadWorkouts() async {
+    this.workouts = await DBService.instance.readAllWorkouts();
+    notifyListeners();
   }
 }
