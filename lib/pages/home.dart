@@ -25,7 +25,6 @@ class _HomeState extends State<Home> {
     setState(() => isLoading = true);
 
     await Provider.of<SessionModel>(context, listen: false).loadWorkouts();
-    print("executed");
 
     setState(() => isLoading = false);
   }

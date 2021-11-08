@@ -21,6 +21,7 @@ class _EditWorkoutState extends State<EditWorkout> {
   List<TextEditingController> _exerciseControllers = [];
 
   bool _isLoading = false;
+  bool _triedSavingWithoutExercises = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -63,7 +64,17 @@ class _EditWorkoutState extends State<EditWorkout> {
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.cancel)),
-          IconButton(onPressed: safeWorkout, icon: Icon(Icons.save))
+          IconButton(
+              onPressed:
+                  /*_exercises.isEmpty
+                  ? () {
+                      setState(() {
+                        _triedSavingWithoutExercises = true;
+                      });
+                    }
+                  : */
+                  safeWorkout,
+              icon: Icon(Icons.save))
         ],
       ),
       floatingActionButton:
@@ -91,7 +102,13 @@ class _EditWorkoutState extends State<EditWorkout> {
                       ? Expanded(
                           child: Center(
                             child: Text(
-                                "No exercises created yet. Click + to add one."),
+                              "No exercises created yet. Click + to add one.",
+                              style: _triedSavingWithoutExercises
+                                  ? TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold)
+                                  : null,
+                            ),
                           ),
                         )
                       :
@@ -173,10 +190,19 @@ class _EditWorkoutState extends State<EditWorkout> {
   }
 
   /// Safes the given workout to the database
+  // Prevents the saving to the db and popping the page if the workout
+  // title or the exercises are missing.
   void safeWorkout() {
     if (_isLoading) return;
 
     if (_formKey.currentState!.validate()) {
+      if (_exerciseControllers.isEmpty) {
+        setState(() {
+          _triedSavingWithoutExercises = true;
+        });
+        return;
+      }
+
       _workout.name = _titleController.text;
 
       // Create exercises
@@ -194,7 +220,7 @@ class _EditWorkoutState extends State<EditWorkout> {
 
       DBService.instance
           .createWorkout(workout: _workout, exercises: _exercises);
+      Navigator.pop(context);
     }
-    Navigator.pop(context);
   }
 }
