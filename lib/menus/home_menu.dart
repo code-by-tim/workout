@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:workout/pages/appSettings.dart';
-import 'package:workout/pages/editWorkout.dart';
+import 'package:workout/pages/app_settings.dart';
+import 'package:workout/pages/edit_workout.dart';
 
 enum MenuOptions { AddWorkout, AppSettings }
 

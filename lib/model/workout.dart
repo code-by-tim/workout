@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:workout/dBService.dart';
+import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
 
 class Workout {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:workout/dBService.dart';
+import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
-import 'package:workout/model/sessionModel.dart';
+import 'package:workout/state/session_model.dart';
 import 'package:workout/model/workout.dart';
-import 'package:workout/pages/exerciseView.dart';
+import 'package:workout/pages/exercise_view.dart';
 
 class WorkoutTile extends StatefulWidget {
   const WorkoutTile({Key? key, required this.workout}) : super(key: key);

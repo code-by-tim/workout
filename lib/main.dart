@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:workout/model/sessionModel.dart';
+import 'package:workout/state/session_model.dart';
 import 'package:workout/pages/home.dart';
 
 void main() {

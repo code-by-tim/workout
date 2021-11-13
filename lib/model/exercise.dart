@@ -1,4 +1,4 @@
-import 'package:workout/dBService.dart';
+import 'package:workout/db_service.dart';
 import 'package:workout/model/set.dart';
 
 enum Scale { Weight, Reps, Time }

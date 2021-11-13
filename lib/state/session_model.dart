@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:workout/dBService.dart';
+import 'package:workout/db_service.dart';
 import 'package:workout/model/workout.dart';
 
 class SessionModel extends ChangeNotifier {
