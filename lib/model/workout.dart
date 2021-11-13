@@ -14,9 +14,9 @@ class Workout {
 
   // assigns the exercises of this workout to the exercises variable
   // in the correct order
-  Future<List<Exercise>> initializeExercises() async {
+  Future initializeExercises() async {
     assert(this.id != null);
-    return DBService.instance.readExercisesOfWorkout(id!);
+    this.exercises = await DBService.instance.readExercisesOfWorkout(id!);
   }
 
   /// Returns a copy of the workout with the specified parameters changed

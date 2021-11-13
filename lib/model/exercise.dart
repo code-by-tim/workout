@@ -30,9 +30,9 @@ class Exercise {
 
   // assigns the sets of this exercise to the sets variable
   // in the correct order
-  Future<List<Set>> initializeSets() async {
+  Future initializeSets() async {
     assert(this.id != null);
-    return DBService.instance.readSetsOfExercise(id!);
+    this.sets = await DBService.instance.readSetsOfExercise(id!);
   }
 
   /// Returns a copy of the exercise with the specified parameters changed

@@ -95,7 +95,7 @@ class _WorkoutTileState extends State<WorkoutTile> {
           assert(exercise.workoutFK != null);
           assert(exercise.id != null);
           Provider.of<SessionModel>(context, listen: false)
-              .initializeFullWorkoutModel(exercise.workoutFK!, exercise.id);
+              .setCurrentWorkout(exercise.workoutFK!, exercise.id);
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => ExerciseView()));
         },

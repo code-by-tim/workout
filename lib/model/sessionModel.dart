@@ -5,24 +5,25 @@ import 'package:workout/model/workout.dart';
 class SessionModel extends ChangeNotifier {
   List<Workout> workouts = [];
   int currentWorkoutID = -1;
+  int currentExerciseID = -1;
 
-  /// Initializes the workout with its exercises and
-  /// the sets of those exercises.
-  /// Updates the respective variables of the SessionModel.
-  void initializeFullWorkoutModel(int workoutID,
-      [int? wantedExerciseID]) async {
+  /// Sets the current workout and optionally the current exercise.
+  void setCurrentWorkout(int workoutID, [int? wantedExerciseID]) async {
     currentWorkoutID = workoutID;
-    Workout workout = await DBService.instance.readWorkout(workoutID);
-    workouts.add(workout);
-    await workout.initializeExercises();
-    workout.exercises.forEach((exercise) {
-      exercise.initializeSets();
-    });
+    if (wantedExerciseID != null) {
+      currentExerciseID = wantedExerciseID;
+    }
   }
 
   /// Loads all workouts from the db and saves them in SessionModel.workouts
   Future loadWorkouts() async {
     this.workouts = await DBService.instance.readAllWorkouts();
+    workouts.forEach((workout) {
+      workout.initializeExercises();
+    });
     notifyListeners();
   }
+
+  /// Loads all Sets into the respective Exercise Variable
+  Future initializeSets(int workoutID) async {}
 }
