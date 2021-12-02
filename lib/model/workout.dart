@@ -11,12 +11,21 @@ class Workout {
   //These attributes are not safed in the db
   List<Exercise> exercises = [];
   int curExPosition = 0;
+  bool initializedSets = false;
 
   // assigns the exercises of this workout to the exercises variable
   // in the correct order
   Future initializeExercises() async {
     assert(this.id != null);
     this.exercises = await DBService.instance.readExercisesOfWorkout(id!);
+  }
+
+  // Initializes the sets of each exercise
+  Future initializeSets() async {
+    this.exercises.forEach((exercise) async {
+      await exercise.initializeSets();
+    });
+    initializedSets = true;
   }
 
   /// Returns a copy of the workout with the specified parameters changed

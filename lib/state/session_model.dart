@@ -4,12 +4,19 @@ import 'package:workout/model/workout.dart';
 
 class SessionModel extends ChangeNotifier {
   List<Workout> workouts = [];
+  late Workout currentWorkout;
   int currentWorkoutID = -1;
   int currentExerciseID = -1;
+
+  // The list index of the current workout
+  get cwIndex {
+    return workouts.firstWhere((workout) => workout.id == currentWorkoutID);
+  }
 
   /// Sets the current workout and optionally the current exercise.
   void setCurrentWorkout(int workoutID, [int? wantedExerciseID]) async {
     currentWorkoutID = workoutID;
+    currentWorkout = workouts[cwIndex];
     if (wantedExerciseID != null) {
       currentExerciseID = wantedExerciseID;
     }
@@ -25,5 +32,9 @@ class SessionModel extends ChangeNotifier {
   }
 
   /// Loads all Sets into the respective Exercise Variable
-  Future initializeSets(int workoutID) async {}
+  Future initializeSets(int workoutID) async {
+    if (!workouts[cwIndex].initializedSets) {
+      workouts[cwIndex].initializeSets();
+    }
+  }
 }

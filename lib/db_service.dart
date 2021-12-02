@@ -65,6 +65,7 @@ class DBService {
   /// Creates default workout with Exercises and Sets
   void _createDefaultData(Database db) async {
     List<Exercise> upperBodyExercises = [];
+
     upperBodyExercises.add(new Exercise(
         name: 'Bizeps-Curls',
         description: "",
@@ -103,20 +104,40 @@ class DBService {
         showReps: false,
         stepSize: 0.25));
 
+    List<Set> sets = [];
+    sets.add(new Set(exerciseFK: 1, weight: 40, reps: 10, duration: 30));
+    sets.add(new Set(exerciseFK: 1, weight: 50, reps: 10, duration: 30));
+    sets.add(new Set(exerciseFK: 1, weight: 60, reps: 10, duration: 30));
+    sets.add(new Set(exerciseFK: 1, weight: 60, reps: 10, duration: 30));
+    sets.add(new Set(exerciseFK: 1, weight: 60, reps: 10, duration: 30));
+    sets.add(new Set(exerciseFK: 1, weight: 60, reps: 10, duration: 30));
+
+    List<int> exerciseIDs = [];
     int workoutIDOne = await db
         .rawInsert('INSERT INTO workout(id, name) VALUES(NULL, "Upper Body");');
-    upperBodyExercises.forEach((exercise) {
-      db.rawInsert(
+    upperBodyExercises.forEach((exercise) async {
+      int exerciseID = await db.rawInsert(
           'INSERT INTO exercise(${ExerciseColumn.allNames.toString().replaceAll(RegExp('(\\[|\\])'), "")}) '
           'VALUES(NULL, $workoutIDOne, 0, "${exercise.name}", "${exercise.description}", ${exercise.pause}, 0, 0, 0.25)');
+      exerciseIDs.add(exerciseID);
     });
 
     int workoutIDTwo = await db
         .rawInsert('INSERT INTO workout(id, name) VALUES(NULL, "Lower Body")');
-    lowerBodyExercises.forEach((exercise) {
-      db.rawInsert(
+    lowerBodyExercises.forEach((exercise) async {
+      int exerciseID = await db.rawInsert(
           'INSERT INTO exercise(${ExerciseColumn.allNames.toString().replaceAll(RegExp('(\\[|\\])'), "")}) '
           'VALUES(NULL, $workoutIDTwo, 0, "${exercise.name}", "${exercise.description}", ${exercise.pause}, 0, 0, 0.25)');
+      exerciseIDs.add(exerciseID);
+    });
+
+    // Insert Sets for each exercise
+    exerciseIDs.forEach((exID) {
+      sets.forEach((wSet) {
+        db.rawInsert(
+            'INSERT INTO setW(${SetColumn.allNames.toString().replaceAll(RegExp('(\\[|\\])'), "")})'
+            'VALUES(NULL, $exID, ${wSet.weight}, ${wSet.reps}, ${wSet.duration})');
+      });
     });
   }
 
