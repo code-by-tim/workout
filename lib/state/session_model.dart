@@ -8,9 +8,14 @@ class SessionModel extends ChangeNotifier {
   int currentWorkoutID = -1;
   int currentExerciseID = -1;
 
-  // The list index of the current workout
+  // The index of the current workout in the workouts-list.
   get cwIndex {
     return workouts.indexWhere((workout) => workout.id == currentWorkoutID);
+  }
+
+  get currentExercise {
+    return currentWorkout.exercises
+        .firstWhere((exercise) => exercise.id == currentExerciseID);
   }
 
   /// Sets the current workout and optionally the current exercise.

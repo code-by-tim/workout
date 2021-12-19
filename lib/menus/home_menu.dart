@@ -19,7 +19,6 @@ class HomeMenu extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => EditWorkout(workoutID: -1)));
           refreshWorkouts();
-          print("refreshWorkouts called");
           break;
         case MenuOptions.AppSettings:
           Navigator.push(
