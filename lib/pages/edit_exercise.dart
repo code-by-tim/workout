@@ -16,4 +16,8 @@ class EditExercise extends StatelessWidget {
       child: Center(child: Text("Hello")),
     );
   }
+
+  /// If isInDB == true, save to the db, otherwise dont do anything (will be saved
+  /// later in edit_workout class)
+  void safeChanges() {}
 }
