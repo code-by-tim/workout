@@ -3,6 +3,21 @@ import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
 import 'package:workout/model/workout.dart';
 
+/// Class to bind exercise to its controller
+/// Updates the exercise title upon changes to the controller
+class ExConPair {
+  Exercise exercise;
+  TextEditingController controller;
+  bool isNew;
+  bool wasModified = false;
+
+  ExConPair(this.exercise, this.controller, {this.isNew = true}) {
+    this.controller.addListener(() {
+      this.exercise.name = this.controller.text;
+    });
+  }
+}
+
 class EditWorkout extends StatefulWidget {
   final int workoutID;
 
@@ -15,10 +30,8 @@ class EditWorkout extends StatefulWidget {
 
 class _EditWorkoutState extends State<EditWorkout> {
   late Workout _workout;
-  late List<Exercise> _exercises;
-
   TextEditingController _titleController = new TextEditingController();
-  List<TextEditingController> _exerciseControllers = [];
+  late List<ExConPair> _exConPairs = [];
 
   bool _isLoading = false;
   bool _triedSavingWithoutExercises = false;
@@ -37,19 +50,20 @@ class _EditWorkoutState extends State<EditWorkout> {
 
     if (widget.workoutID < 0) {
       this._workout = new Workout(name: "");
-      this._exercises = [];
     } else {
       this._workout = await DBService.instance.readWorkout(widget.workoutID);
       try {
-        this._exercises =
+        List<Exercise> _exercise =
             await DBService.instance.readExercisesOfWorkout(widget.workoutID);
+        _exercise.forEach((exercise) {
+          _exConPairs.add(new ExConPair(
+              exercise, new TextEditingController(text: exercise.name),
+              isNew: false));
+        });
       } catch (e) {}
     }
 
     _titleController.text = _workout.name;
-    _exercises.forEach((exercise) {
-      _exerciseControllers.add(new TextEditingController(text: exercise.name));
-    });
     setState(() => _isLoading = false);
   }
 
@@ -64,17 +78,7 @@ class _EditWorkoutState extends State<EditWorkout> {
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.cancel)),
-          IconButton(
-              onPressed:
-                  /*_exercises.isEmpty
-                  ? () {
-                      setState(() {
-                        _triedSavingWithoutExercises = true;
-                      });
-                    }
-                  : */
-                  safeWorkout,
-              icon: Icon(Icons.save))
+          IconButton(onPressed: safeWorkout, icon: Icon(Icons.save))
         ],
       ),
       floatingActionButton:
@@ -98,7 +102,7 @@ class _EditWorkoutState extends State<EditWorkout> {
                     },
                   ),
                   // Give note when no exercises yet
-                  _exerciseControllers.length == 0
+                  _exConPairs.length == 0
                       ? Expanded(
                           child: Center(
                             child: Text(
@@ -116,15 +120,14 @@ class _EditWorkoutState extends State<EditWorkout> {
                       Expanded(
                           child: ReorderableListView.builder(
                             itemBuilder: _buildExerciseListTile,
-                            itemCount: _exerciseControllers.length,
+                            itemCount: _exConPairs.length,
                             onReorder: (int oldIndex, int newIndex) {
                               setState(() {
                                 if (oldIndex < newIndex) {
                                   newIndex -= 1;
                                 }
-                                var item =
-                                    _exerciseControllers.removeAt(oldIndex);
-                                _exerciseControllers.insert(newIndex, item);
+                                var item = _exConPairs.removeAt(oldIndex);
+                                _exConPairs.insert(newIndex, item);
                               });
                             },
                           ),
@@ -150,7 +153,7 @@ class _EditWorkoutState extends State<EditWorkout> {
             SizedBox(width: 15),
             Expanded(
               child: TextFormField(
-                controller: _exerciseControllers[index],
+                controller: _exConPairs[index].controller,
                 decoration: InputDecoration(
                   hintText: 'Exercise $index',
                   border: InputBorder.none,
@@ -169,7 +172,7 @@ class _EditWorkoutState extends State<EditWorkout> {
             IconButton(
                 onPressed: () {
                   setState(() {
-                    _exerciseControllers.removeAt(index);
+                    _exConPairs.removeAt(index);
                   });
                 },
                 icon: Icon(Icons.delete)),
@@ -185,7 +188,15 @@ class _EditWorkoutState extends State<EditWorkout> {
   void _addExercise() {
     if (_isLoading) return;
     setState(() {
-      _exerciseControllers.add(TextEditingController());
+      _exConPairs.add(new ExConPair(
+          new Exercise(
+              name: "",
+              description: "",
+              pause: 120,
+              scale: Scale.Weight,
+              showReps: false,
+              stepSize: 0.25),
+          new TextEditingController()));
     });
   }
 
@@ -196,7 +207,7 @@ class _EditWorkoutState extends State<EditWorkout> {
     if (_isLoading) return;
 
     if (_formKey.currentState!.validate()) {
-      if (_exerciseControllers.isEmpty) {
+      if (_exConPairs.isEmpty) {
         setState(() {
           _triedSavingWithoutExercises = true;
         });
@@ -205,18 +216,10 @@ class _EditWorkoutState extends State<EditWorkout> {
 
       _workout.name = _titleController.text;
 
-      // Create exercises
-      for (var i = 0; i < _exerciseControllers.length; i++) {
-        if (i >= _exercises.length) {
-          _exercises.add(new Exercise(
-              name: _exerciseControllers[i].text,
-              description: "",
-              pause: 120,
-              scale: Scale.Weight,
-              showReps: false,
-              stepSize: 0.25));
-        }
-      }
+      List<Exercise> _exercises = [];
+      _exConPairs.forEach((exConPair) {
+        _exercises.add(exConPair.exercise);
+      });
 
       DBService.instance
           .createWorkout(workout: _workout, exercises: _exercises);
