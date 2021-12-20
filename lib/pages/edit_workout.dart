@@ -3,6 +3,8 @@ import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
 import 'package:workout/model/workout.dart';
 
+import 'edit_exercise.dart';
+
 /// Class to bind exercise to its controller
 /// Updates the exercise title upon changes to the controller
 class ExConPair {
@@ -167,7 +169,15 @@ class _EditWorkoutState extends State<EditWorkout> {
               ),
             ),
             SizedBox(width: 15),
-            Icon(Icons.tune),
+            IconButton(
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EditExercise(
+                              exercise: _exConPairs[index].exercise,
+                              isInDB: !_exConPairs[index].isNew,
+                            ))),
+                icon: Icon(Icons.tune)),
             SizedBox(width: 15),
             IconButton(
                 onPressed: () {

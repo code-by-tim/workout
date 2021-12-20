@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:workout/model/exercise.dart';
 
+// IsInDB is used to distinguish later when saving wether I need to update the db
+// or if I have to put it in the state model
 class EditExercise extends StatelessWidget {
-  const EditExercise({Key? key}) : super(key: key);
+  const EditExercise({Key? key, required this.exercise, required this.isInDB})
+      : super(key: key);
+
+  final Exercise exercise;
+  final bool isInDB;
 
   @override
   Widget build(BuildContext context) {
