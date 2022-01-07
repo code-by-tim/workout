@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workout/db_service.dart';
+import 'package:workout/menus/home_workout_menu.dart';
 import 'package:workout/model/exercise.dart';
 import 'package:workout/state/session_model.dart';
 import 'package:workout/model/workout.dart';
 import 'package:workout/pages/exercise_view.dart';
 
 class WorkoutTile extends StatefulWidget {
-  const WorkoutTile({Key? key, required this.workout}) : super(key: key);
+  const WorkoutTile(
+      {Key? key, required this.workout, required this.refreshWorkouts})
+      : super(key: key);
 
   final Workout workout;
+  final Future<dynamic> Function() refreshWorkouts;
 
   @override
   _WorkoutTileState createState() => _WorkoutTileState();
@@ -91,7 +95,7 @@ class _WorkoutTileState extends State<WorkoutTile> {
     exercises!.forEach((exercise) {
       extensionBody.add(GestureDetector(
         onTap: () {
-          // updated SessionModel and push ExerciseView
+          // update SessionModel and push ExerciseView
           assert(exercise.workoutFK != null);
           assert(exercise.id != null);
           Provider.of<SessionModel>(context, listen: false)
@@ -111,6 +115,12 @@ class _WorkoutTileState extends State<WorkoutTile> {
         ),
       ));
     });
+
+    // Add contextMenu Button to end of extended part
+    extensionBody.add(WorkoutContextMenu(
+        workoutID: widget.workout.id!,
+        refreshWorkouts: widget.refreshWorkouts));
+
     return extensionBody;
   }
 }

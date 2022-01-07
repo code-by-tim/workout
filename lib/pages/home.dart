@@ -56,7 +56,10 @@ class _HomeState extends State<Home> {
     List<WorkoutTile> _workoutTiles = [];
 
     Provider.of<SessionModel>(context).workouts.forEach((workout) {
-      _workoutTiles.add(WorkoutTile(workout: workout));
+      _workoutTiles.add(WorkoutTile(
+        workout: workout,
+        refreshWorkouts: refreshWorkouts,
+      ));
     });
     return _workoutTiles;
   }

@@ -194,7 +194,6 @@ class DBService {
   }
 
 // READ Functions --------------------------------------------------------------
-  /// Needed
   /// Returns the workout with the specified id.
   /// If not found throws an exception
   Future<Workout> readWorkout(int id) async {
@@ -211,6 +210,25 @@ class DBService {
       return Workout.fromMap(maps.first);
     } else {
       throw Exception('Workout with ID=$id not found');
+    }
+  }
+
+  /// Returns the exerise with the specified id.
+  /// If not found throws an exception
+  Future<Exercise> readExercise(int exerciseID) async {
+    final Database db = await instance.database;
+
+    List<Map<String, dynamic>> maps = await db.query(
+      'exercise',
+      columns: ExerciseColumn.allNames,
+      where: '${WorkoutColumn.id} = ?',
+      whereArgs: [exerciseID],
+    );
+    if (maps.isNotEmpty) {
+      Exercise exercise = Exercise.fromMap(maps.first);
+      return exercise;
+    } else {
+      throw Exception('Exercise with ID=$exerciseID not found');
     }
   }
 

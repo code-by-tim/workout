@@ -37,6 +37,16 @@ class SessionModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Loads an exercise from the db and overwrites the old exercise in the model.
+  /// Only call this method from a point where the respective Exercise is in
+  /// the currentWorkout Workout!
+  Future reloadExercise(int exerciseID) async {
+    int index = currentWorkout.exercises
+        .indexWhere((exercise) => exercise.id == exerciseID);
+    currentWorkout.exercises[index] =
+        await DBService.instance.readExercise(exerciseID);
+  }
+
   /// Loads all Sets into the respective Exercise Variable
   Future initializeSets(int workoutID) async {
     if (!workouts[cwIndex].initializedSets) {

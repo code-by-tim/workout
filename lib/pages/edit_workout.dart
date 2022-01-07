@@ -23,8 +23,8 @@ class ExConPair {
 class EditWorkout extends StatefulWidget {
   final int workoutID;
 
-  /// Pass a negative value to the constructor when a new workout should be created
   const EditWorkout({Key? key, required this.workoutID}) : super(key: key);
+  const EditWorkout.createNew({Key? key}) : this.workoutID = -1;
 
   @override
   _EditWorkoutState createState() => _EditWorkoutState();
@@ -174,7 +174,7 @@ class _EditWorkoutState extends State<EditWorkout> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => EditExercise(
-                              exercise: _exConPairs[index].exercise,
+                              exerciseToUpdate: _exConPairs[index].exercise,
                               isInDB: !_exConPairs[index].isNew,
                             ))),
                 icon: Icon(Icons.tune)),

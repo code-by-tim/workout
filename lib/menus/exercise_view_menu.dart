@@ -17,7 +17,7 @@ class ExerciseViewMenu extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => EditExercise(
-                        exercise:
+                        exerciseToUpdate:
                             Provider.of<SessionModel>(context, listen: false)
                                 .currentExercise,
                         isInDB: true,
