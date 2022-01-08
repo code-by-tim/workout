@@ -32,7 +32,7 @@ class WorkoutContextMenu extends StatelessWidget {
     }
 
     return PopupMenuButton(
-      tooltip: "Öffnet Kontextmenü",
+      tooltip: "Öffne Optionen",
       icon: Icon(Icons.more_horiz),
       onSelected: _handleSelection,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[

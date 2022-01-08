@@ -16,13 +16,13 @@ class ExConPair {
   ExConPair(this.exercise, this.controller, {this.isNew = true}) {
     this.controller.addListener(() {
       this.exercise.name = this.controller.text;
+      this.wasModified = true;
     });
   }
 }
 
 class EditWorkout extends StatefulWidget {
-  final int workoutID;
-
+  final int workoutID; //if set to negative number, a new workout is created.
   const EditWorkout({Key? key, required this.workoutID}) : super(key: key);
   const EditWorkout.createNew({Key? key}) : this.workoutID = -1;
 
@@ -32,7 +32,9 @@ class EditWorkout extends StatefulWidget {
 
 class _EditWorkoutState extends State<EditWorkout> {
   late Workout _workout;
+  bool _workoutWasModified = false;
   TextEditingController _titleController = new TextEditingController();
+
   late List<ExConPair> _exConPairs = [];
 
   bool _isLoading = false;
@@ -43,6 +45,10 @@ class _EditWorkoutState extends State<EditWorkout> {
   @override
   initState() {
     super.initState();
+    // Remember if workout was modified for the saving-method
+    this._titleController.addListener(() {
+      this._workoutWasModified = true;
+    });
     loadWorkout();
   }
 
@@ -194,7 +200,7 @@ class _EditWorkoutState extends State<EditWorkout> {
     );
   }
 
-  /// Adds one element to _exerciseControllers
+  /// Adds one element to _exConPairs
   void _addExercise() {
     if (_isLoading) return;
     setState(() {
@@ -224,15 +230,23 @@ class _EditWorkoutState extends State<EditWorkout> {
         return;
       }
 
-      _workout.name = _titleController.text;
+      if (widget.workoutID < 0) {
+        //if workout is new
+        _workout.name = _titleController.text;
 
-      List<Exercise> _exercises = [];
-      _exConPairs.forEach((exConPair) {
-        _exercises.add(exConPair.exercise);
-      });
+        List<Exercise> _exercises = [];
+        _exConPairs.forEach((exConPair) {
+          _exercises.add(exConPair.exercise);
+        });
 
-      DBService.instance
-          .createWorkout(workout: _workout, exercises: _exercises);
+        DBService.instance
+            .createWorkout(workout: _workout, exercises: _exercises);
+      } else {
+        // if workout already exists in DB:
+        // update workout if necessary
+        if (_workoutWasModified) {}
+      }
+
       Navigator.pop(context);
     }
   }
