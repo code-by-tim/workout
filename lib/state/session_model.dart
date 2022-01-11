@@ -19,10 +19,14 @@ class SessionModel extends ChangeNotifier {
   }
 
   /// Sets the current workout and optionally the current exercise.
+  /// Also initializes all sets of this workout if still necessary
   void setCurrentWorkout(int workoutID, [int? wantedExerciseID]) {
     currentWorkout = workouts.firstWhere((workout) => workout.id == workoutID);
     if (wantedExerciseID != null) {
       currentExerciseID = wantedExerciseID;
+    }
+    if (!currentWorkout.initializedSets) {
+      currentWorkout.initializeSets();
     }
   }
 
