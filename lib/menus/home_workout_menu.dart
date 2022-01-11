@@ -25,9 +25,7 @@ class WorkoutContextMenu extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => EditWorkout(workoutID: workoutID)));
           break;
-        case MenuOptions
-            .DeleteWorkout: // Remove this option later. Deletions should only happen through the edit Workout Screen.
-          // Such a central delete option shouldn't be that easily accessible.
+        case MenuOptions.DeleteWorkout:
           Provider.of<SessionModel>(context, listen: false)
               .removeWorkout(workoutID);
           break;
