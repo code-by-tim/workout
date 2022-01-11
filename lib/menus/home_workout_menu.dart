@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:workout/pages/app_settings.dart';
 import 'package:workout/pages/edit_workout.dart';
 import 'package:workout/state/session_model.dart';
 
@@ -25,9 +24,10 @@ class WorkoutContextMenu extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => EditWorkout(workoutID: workoutID)));
-          //refreshWorkouts(); Unnecessary cause handled through provider and notifyListener.
           break;
-        case MenuOptions.DeleteWorkout:
+        case MenuOptions
+            .DeleteWorkout: // Remove this option later. Deletions should only happen through the edit Workout Screen.
+          // Such a central delete option shouldn't be that easily accessible.
           Provider.of<SessionModel>(context, listen: false)
               .removeWorkout(workoutID);
           break;
