@@ -316,4 +316,48 @@ class DBService {
       whereArgs: [setW.id],
     );
   }
+
+  // Delete Functions ----------------------------------------------------------
+  Future<int> deleteWorkout(int workoutID) async {
+    final Database db = await instance.database;
+
+    db.delete(
+      'exercise',
+      where: '${ExerciseColumn.workout} = ?',
+      whereArgs: [workoutID],
+    );
+
+    return db.delete(
+      'workout',
+      where: '${WorkoutColumn.id} = ?',
+      whereArgs: [workoutID],
+    );
+  }
+
+  Future<int> deleteExercise(int exerciseID) async {
+    final Database db = await instance.database;
+
+    // delete all sets of this exercise
+    db.delete(
+      'setW',
+      where: '${SetColumn.exercise} = ?',
+      whereArgs: [exerciseID],
+    );
+
+    return db.delete(
+      'exercise',
+      where: '${ExerciseColumn.id} = ?',
+      whereArgs: [exerciseID],
+    );
+  }
+
+  Future<int> deleteSet(int setID) async {
+    final Database db = await instance.database;
+
+    return db.delete(
+      'setW',
+      where: '${SetColumn.id} = ?',
+      whereArgs: [setID],
+    );
+  }
 }

@@ -28,8 +28,8 @@ class WorkoutContextMenu extends StatelessWidget {
           //refreshWorkouts(); Unnecessary cause handled through provider and notifyListener.
           break;
         case MenuOptions.DeleteWorkout:
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => AppSettings()));
+          Provider.of<SessionModel>(context, listen: false)
+              .removeWorkout(workoutID);
           break;
         default:
       }

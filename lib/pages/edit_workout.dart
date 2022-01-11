@@ -37,7 +37,8 @@ class _EditWorkoutState extends State<EditWorkout> {
   bool _workoutWasModified = false;
   TextEditingController _titleController = new TextEditingController();
 
-  late List<ExConPair> _exConPairs = [];
+  List<ExConPair> _exConPairs = [];
+  List<int> deletedExerciseIDs = [];
 
   bool _isLoading = false;
   bool _triedSavingWithoutExercises = false;
@@ -192,6 +193,7 @@ class _EditWorkoutState extends State<EditWorkout> {
             IconButton(
                 onPressed: () {
                   setState(() {
+                    deletedExerciseIDs.add(_exConPairs[index].exercise.id!);
                     _exConPairs.removeAt(index);
                   });
                 },
@@ -247,8 +249,26 @@ class _EditWorkoutState extends State<EditWorkout> {
             .createWorkout(workout: _workout, exercises: _exercises);
       } else {
         // if workout already exists in DB:
-        // update workout if necessary
-        if (_workoutWasModified) {}
+        // update workout and its exercises if necessary
+        if (_workoutWasModified) {
+          _workout.name = _titleController.text;
+          DBService.instance.updateWorkout(_workout);
+          Provider.of<SessionModel>(context, listen: false)
+              .reloadWorkout(_workout.id!);
+        }
+
+        _exConPairs.forEach((pair) {
+          if (pair.wasModified) {
+            DBService.instance.updateExercise(pair.exercise);
+            Provider.of<SessionModel>(context, listen: false)
+                .reloadExercise(pair.exercise.id!);
+          }
+        });
+
+        deletedExerciseIDs.forEach((id) {
+          DBService.instance.deleteExercise(id);
+          Provider.of<SessionModel>(context, listen: false).removeExercise(id);
+        });
       }
 
       Navigator.pop(context);

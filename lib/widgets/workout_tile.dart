@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:workout/db_service.dart';
 import 'package:workout/menus/home_workout_menu.dart';
 import 'package:workout/model/exercise.dart';
 import 'package:workout/state/session_model.dart';
@@ -77,8 +76,8 @@ class _WorkoutTileState extends State<WorkoutTile> {
         isLoadingExercises = true;
         isExtended = true;
       });
-      this.exercises =
-          await DBService.instance.readExercisesOfWorkout(widget.workout.id!);
+      this.exercises = Provider.of<SessionModel>(context, listen: false)
+          .getExercisesOf(widget.workout.id!);
       setState(() {
         isLoadingExercises = false;
       });
