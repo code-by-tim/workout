@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:workout/pages/app_settings.dart';
 import 'package:workout/pages/edit_workout.dart';
+import 'package:workout/state/session_model.dart';
 
 enum MenuOptions { EditWorkout, DeleteWorkout }
 
@@ -17,11 +19,13 @@ class WorkoutContextMenu extends StatelessWidget {
     void _handleSelection(value) async {
       switch (value) {
         case MenuOptions.EditWorkout:
+          Provider.of<SessionModel>(context, listen: false)
+              .setCurrentWorkout(workoutID);
           await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => EditWorkout(workoutID: workoutID)));
-          refreshWorkouts();
+          //refreshWorkouts(); Unnecessary cause handled through provider and notifyListener.
           break;
         case MenuOptions.DeleteWorkout:
           Navigator.push(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:workout/menus/home_menu.dart';
+import 'package:workout/menus/home_main_menu.dart';
 import 'package:workout/state/session_model.dart';
 import 'package:workout/widgets/workout_tile.dart';
 

@@ -45,6 +45,7 @@ class SessionModel extends ChangeNotifier {
         .indexWhere((exercise) => exercise.id == exerciseID);
     currentWorkout.exercises[index] =
         await DBService.instance.readExercise(exerciseID);
+    notifyListeners();
   }
 
   /// Loads all Sets into the respective Exercise Variable

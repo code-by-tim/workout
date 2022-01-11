@@ -141,6 +141,9 @@ class DBService {
     });
   }
 
+// CRUD - Operations -----------------------------------------------------------
+// -----------------------------------------------------------------------------
+
 // CREATE Functions ------------------------------------------------------------
   /// Inserts a workout and optionally also its exercises
   Future<OPResult> createWorkout(
@@ -278,5 +281,39 @@ class DBService {
     final Database db = await instance.database;
     final maps = await db.query('workout');
     return maps.map((map) => Workout.fromMap(map)).toList();
+  }
+
+  // UPDATE Functions ----------------------------------------------------------
+  Future<int> updateWorkout(Workout workout) async {
+    final Database db = await instance.database;
+
+    return db.update(
+      'workout',
+      workout.toMap(),
+      where: '${WorkoutColumn.id} = ?',
+      whereArgs: [workout.id],
+    );
+  }
+
+  Future<int> updateExercise(Exercise exercise) async {
+    final Database db = await instance.database;
+
+    return db.update(
+      'exercise',
+      exercise.toMap(),
+      where: '${ExerciseColumn.id} = ?',
+      whereArgs: [exercise.id],
+    );
+  }
+
+  Future<int> updateSet(Set setW) async {
+    final Database db = await instance.database;
+
+    return db.update(
+      'setW',
+      setW.toMap(),
+      where: '${SetColumn.id} = ?',
+      whereArgs: [setW.id],
+    );
   }
 }

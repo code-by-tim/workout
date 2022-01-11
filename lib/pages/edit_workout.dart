@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
 import 'package:workout/model/workout.dart';
+import 'package:workout/state/session_model.dart';
 
 import 'edit_exercise.dart';
 
@@ -57,12 +59,14 @@ class _EditWorkoutState extends State<EditWorkout> {
     setState(() => _isLoading = true);
 
     if (widget.workoutID < 0) {
+      // new Workout should be created
       this._workout = new Workout(name: "");
     } else {
-      this._workout = await DBService.instance.readWorkout(widget.workoutID);
+      // existing workout is edited
+      this._workout =
+          Provider.of<SessionModel>(context, listen: false).currentWorkout;
       try {
-        List<Exercise> _exercise =
-            await DBService.instance.readExercisesOfWorkout(widget.workoutID);
+        List<Exercise> _exercise = this._workout.exercises;
         _exercise.forEach((exercise) {
           _exConPairs.add(new ExConPair(
               exercise, new TextEditingController(text: exercise.name),
