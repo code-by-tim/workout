@@ -265,15 +265,13 @@ class DBService {
       whereArgs: [exerciseID],
     );
 
+    List<Set> sets = [];
     if (maps.isNotEmpty) {
-      List<Set> sets = [];
       maps.forEach((map) {
         sets.add(Set.fromMap(map));
       });
-      return sets;
-    } else {
-      throw Exception('Sets of exercise with ID=$exerciseID not found');
     }
+    return sets;
   }
 
   /// Returns a list of all workouts in the database

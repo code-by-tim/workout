@@ -193,7 +193,9 @@ class _EditWorkoutState extends State<EditWorkout> {
             IconButton(
                 onPressed: () {
                   setState(() {
-                    deletedExerciseIDs.add(_exConPairs[index].exercise.id!);
+                    if (!_exConPairs[index].isNew) {
+                      deletedExerciseIDs.add(_exConPairs[index].exercise.id!);
+                    }
                     _exConPairs.removeAt(index);
                   });
                 },
@@ -214,6 +216,7 @@ class _EditWorkoutState extends State<EditWorkout> {
           new Exercise(
               name: "",
               description: "",
+              workoutFK: _workout.id,
               pause: 120,
               scale: Scale.Weight,
               showReps: false,
@@ -258,7 +261,15 @@ class _EditWorkoutState extends State<EditWorkout> {
         }
 
         _exConPairs.forEach((pair) {
-          if (pair.wasModified) {
+          if (pair.isNew) {
+            DBService.instance.createExercise(pair.exercise);
+            int index = Provider.of<SessionModel>(context, listen: false)
+                .getWorkoutIndex(_workout.id!);
+            Provider.of<SessionModel>(context, listen: false)
+                .workouts[index]
+                .exercises
+                .add(pair.exercise);
+          } else if (pair.wasModified) {
             DBService.instance.updateExercise(pair.exercise);
             Provider.of<SessionModel>(context, listen: false)
                 .reloadExercise(pair.exercise.id!);

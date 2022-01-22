@@ -18,6 +18,12 @@ class SessionModel extends ChangeNotifier {
         .firstWhere((exercise) => exercise.id == currentExerciseID);
   }
 
+  /// Returns the index of the workout in workouts[] that satisfies
+  /// the specified test
+  int getWorkoutIndex(int workoutID) {
+    return workouts.indexWhere((workout) => workout.id == workoutID);
+  }
+
   /// Sets the current workout and optionally the current exercise.
   /// Also initializes all sets of this workout if still necessary
   void setCurrentWorkout(int workoutID, [int? wantedExerciseID]) {
