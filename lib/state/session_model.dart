@@ -81,21 +81,23 @@ class SessionModel extends ChangeNotifier {
     }
   }
 
-  /// Removes the Exercise from the model.
+  /// Deletes the exercise from the db and removes it from the model.
   /// Only call this method from a point where the respective Exercise is in
   /// the currentWorkout Workout!
   /// Calls notifyListeners()
-  void removeExercise(int exerciseID) {
+  void deleteExercise(int exerciseID) {
     int index = currentWorkout.exercises
         .indexWhere((exercise) => exercise.id == exerciseID);
     currentWorkout.exercises.removeAt(index);
+    DBService.instance.deleteExercise(exerciseID);
     notifyListeners();
   }
 
-  /// Removes the Workout from the model.
+  /// Deletes the workout from the db and removes it from the model.
   // Calls notifyListeners()
-  void removeWorkout(int workoutID) {
+  void deleteWorkout(int workoutID) {
     workouts.removeWhere((element) => element.id == workoutID);
+    DBService.instance.deleteWorkout(workoutID);
     notifyListeners();
   }
 }

@@ -266,8 +266,7 @@ class _EditWorkoutState extends State<EditWorkout> {
         });
 
         deletedExerciseIDs.forEach((id) {
-          DBService.instance.deleteExercise(id);
-          Provider.of<SessionModel>(context, listen: false).removeExercise(id);
+          Provider.of<SessionModel>(context, listen: false).deleteExercise(id);
         });
       }
 

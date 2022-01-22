@@ -321,6 +321,17 @@ class DBService {
   Future<int> deleteWorkout(int workoutID) async {
     final Database db = await instance.database;
 
+    List<Map> setIDsMap = await db.rawQuery(
+        'SELECT setW.id '
+        'FROM setW, exercise, workout '
+        'WHERE exercise.workout = ? '
+        'AND exercise.id = setW.exercise; ',
+        [workoutID]);
+
+    setIDsMap.forEach((element) {
+      this.deleteSet(element[SetColumn.id] as int);
+    });
+
     db.delete(
       'exercise',
       where: '${ExerciseColumn.workout} = ?',

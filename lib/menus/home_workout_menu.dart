@@ -27,7 +27,7 @@ class WorkoutContextMenu extends StatelessWidget {
           break;
         case MenuOptions.DeleteWorkout:
           Provider.of<SessionModel>(context, listen: false)
-              .removeWorkout(workoutID);
+              .deleteWorkout(workoutID);
           break;
         default:
       }
