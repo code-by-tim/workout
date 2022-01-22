@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:workout/state/exercise_editing_model.dart';
 import 'package:workout/state/session_model.dart';
 import 'package:workout/pages/home.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => SessionModel(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SessionModel()),
+        ChangeNotifierProvider(create: (context) => ExerciseEditingModel()),
+      ],
       child: MyApp(),
     ),
   );

@@ -20,7 +20,7 @@ class ExerciseViewMenu extends StatelessWidget {
                         exerciseToUpdate:
                             Provider.of<SessionModel>(context, listen: false)
                                 .currentExercise,
-                        isInDB: true,
+                        safeToDBDirectly: true,
                       )));
           break;
         default:

@@ -32,25 +32,17 @@ class _ExerciseViewState extends State<ExerciseView> {
     return Scaffold(
       body: Consumer<SessionModel>(
         builder: (_, model, __) {
-          // if first time on this exercise page, show configuration options
-          if (!exercise.controlledByUser) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(exercise.name),
-                automaticallyImplyLeading: false,
-                actions: [ExerciseViewMenu()],
-              ),
-              body: Center(child: Text("Exercise has not been configured yet")),
-            );
-          } else {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(exercise.name),
-                automaticallyImplyLeading: false,
-              ),
-              body: Center(child: Text("Exercise has been configured!!")),
-            );
-          }
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(exercise.name),
+              automaticallyImplyLeading: false,
+              actions: [ExerciseViewMenu()],
+            ),
+            // if first time on this exercise page, show Button to edit_exercise
+            body: exercise.controlledByUser
+                ? Center(child: Text("Exercise has been configured yet"))
+                : Center(child: Text("Exercise has not been configured yet")),
+          );
         },
       ),
     );
