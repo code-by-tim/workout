@@ -26,21 +26,18 @@ class _ExerciseViewState extends State<ExerciseView> {
 
   @override
   Widget build(BuildContext context) {
-    exercise =
-        Provider.of<SessionModel>(context, listen: false).currentExercise;
-
     return Scaffold(
       body: Consumer<SessionModel>(
         builder: (_, model, __) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(exercise.name),
+              title: Text(model.currentExercise.name),
               automaticallyImplyLeading: false,
               actions: [ExerciseViewMenu()],
             ),
             // if first time on this exercise page, show Button to edit_exercise
             body: exercise.controlledByUser
-                ? Center(child: Text("Exercise has been configured yet"))
+                ? Center(child: Text("Exercise has been configured"))
                 : Center(child: Text("Exercise has not been configured yet")),
           );
         },

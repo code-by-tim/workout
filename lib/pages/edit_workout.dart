@@ -182,20 +182,24 @@ class _EditWorkoutState extends State<EditWorkout> {
             ),
             SizedBox(width: 15),
             IconButton(
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  await Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => EditExercise(
                                 exerciseToUpdate: _exConPairs[index].exercise,
                                 safeToDBDirectly: false,
                               )));
-                  _exConPairs[index].exercise =
-                      Provider.of<ExerciseEditingModel>(context, listen: false)
-                          .updatedExercise;
-                  // update Exercise title (it might have been changed in the edit_exercise view)
-                  _exConPairs[index].controller.text =
-                      _exConPairs[index].exercise.name;
+                  if (Provider.of<ExerciseEditingModel>(context, listen: false)
+                      .updateRequested) {
+                    _exConPairs[index].exercise =
+                        Provider.of<ExerciseEditingModel>(context,
+                                listen: false)
+                            .updatedExercise;
+                    // update Exercise title (it might have been changed in the edit_exercise view)
+                    _exConPairs[index].controller.text =
+                        _exConPairs[index].exercise.name;
+                  }
                 },
                 icon: Icon(Icons.tune)),
             SizedBox(width: 15),
