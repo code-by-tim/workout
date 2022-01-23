@@ -24,11 +24,14 @@ class EditExercise extends StatelessWidget {
             stepSize: exerciseToUpdate.stepSize),
         this.titleController =
             new TextEditingController(text: exerciseToUpdate.name),
+        this.descriptionController =
+            new TextEditingController(text: exerciseToUpdate.description),
         super(key: key);
 
   final Exercise exerciseToUpdate;
   final Exercise tempExercise;
   final TextEditingController titleController;
+  final TextEditingController descriptionController;
   final bool safeToDBDirectly;
 
   final _formKey = GlobalKey<FormState>();
@@ -40,6 +43,7 @@ class EditExercise extends StatelessWidget {
       tempExercise.controlledByUser = true;
 
       tempExercise.name = titleController.text;
+      tempExercise.description = descriptionController.text;
       if (safeToDBDirectly) {
         DBService.instance.updateExercise(tempExercise);
         Provider.of<SessionModel>(context, listen: false)
@@ -83,6 +87,18 @@ class EditExercise extends StatelessWidget {
                   return null;
                 },
               ),
+              // Exercise description
+              TextFormField(
+                controller: descriptionController,
+                decoration: const InputDecoration(hintText: 'Description...'),
+              ),
+              // Exercise pause
+              // Hierzu Number Picker pop up kreieren, dass ich dann auch
+              // in der Exercise View wiederverwenden kann
+
+              // Set Count (Sollte mit Plus und minus links und rechts von der Zahl
+              // einfach einstellbar sein). Besser Sets hinzufügen und Entfernen
+              // Logik hier rein, nicht in die Exercise View
             ],
           )),
     );
