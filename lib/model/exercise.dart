@@ -25,14 +25,16 @@ class Exercise {
   bool showReps;
   double stepSize;
 
-  //This attribute is not safed in the db
+  //These attributes are not safed in the db
   List<Set> sets = [];
+  int setCount = 0;
 
   // assigns the sets of this exercise to the sets variable
   // in the correct order
   Future initializeSets() async {
     assert(this.id != null);
     this.sets = await DBService.instance.readSetsOfExercise(id!);
+    setCount = this.sets.length;
   }
 
   /// Returns a copy of the exercise with the specified parameters changed

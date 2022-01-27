@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
+import 'package:workout/model/set.dart';
 import 'package:workout/state/exercise_editing_model.dart';
 import 'package:workout/state/session_model.dart';
 
 // IsInDB is used to distinguish later when saving wether I need to update the db
 // or if I have to put it in the state model
-class EditExercise extends StatelessWidget {
+class EditExercise extends StatefulWidget {
   EditExercise(
       {Key? key,
       required this.exerciseToUpdate,
@@ -34,26 +35,53 @@ class EditExercise extends StatelessWidget {
   final TextEditingController descriptionController;
   final bool safeToDBDirectly;
 
+  @override
+  State<EditExercise> createState() => _EditExerciseState();
+}
+
+class _EditExerciseState extends State<EditExercise> {
+  int setCount = 0;
+
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     /// safes updates to DB or puts the updated exercise in the ExerciseEditingModel
     void _safeChanges() {
-      tempExercise.controlledByUser = true;
+      widget.tempExercise.controlledByUser = true;
 
-      tempExercise.name = titleController.text;
-      tempExercise.description = descriptionController.text;
-      if (safeToDBDirectly) {
-        DBService.instance.updateExercise(tempExercise);
+      widget.tempExercise.name = widget.titleController.text;
+      widget.tempExercise.description = widget.descriptionController.text;
+      if (widget.safeToDBDirectly) {
+        DBService.instance.updateExercise(widget.tempExercise);
         Provider.of<SessionModel>(context, listen: false)
-            .reloadExercise(tempExercise.id!);
+            .reloadExercise(widget.tempExercise.id!);
+
+        // Safe added Sets to DB or delete if Sets were removed
+        int setDifference = setCount - widget.exerciseToUpdate.sets.length;
+        if (setDifference > 0) {
+          Set setW = new Set(
+              exerciseFK: widget.exerciseToUpdate.id!,
+              weight: 50,
+              reps: 10,
+              duration: 20);
+          for (var i = 0; i < setDifference; i++) {
+            //Todo change createSet the sets to make a nice rising diagramm like in db_service.dart
+            DBService.instance.createSet(setW);
+          }
+        } else if (setDifference < 0) {
+          for (var i = 0; i < setDifference.abs(); i++) {
+            Provider.of<SessionModel>(context, listen: false)
+                .deleteSet(widget.exerciseToUpdate.id!);
+          }
+        }
       } else {
+        widget.tempExercise.setCount = this.setCount;
         Provider.of<ExerciseEditingModel>(context, listen: false)
-            .updatedExercise = tempExercise;
+            .updatedExercise = widget.tempExercise;
+        Provider.of<ExerciseEditingModel>(context, listen: false)
+            .updateRequested = true;
       }
-      Provider.of<ExerciseEditingModel>(context, listen: false)
-          .updateRequested = true;
       Navigator.pop(context);
     }
 
@@ -77,7 +105,7 @@ class EditExercise extends StatelessWidget {
             children: [
               // Exercise title
               TextFormField(
-                controller: titleController,
+                controller: widget.titleController,
                 style: TextStyle(fontSize: 30),
                 decoration: const InputDecoration(hintText: 'Exercise name'),
                 validator: (value) {
@@ -89,16 +117,37 @@ class EditExercise extends StatelessWidget {
               ),
               // Exercise description
               TextFormField(
-                controller: descriptionController,
+                controller: widget.descriptionController,
                 decoration: const InputDecoration(hintText: 'Description...'),
               ),
+              Row(
+                children: [
+                  Expanded(
+                      child: Text("Number of Sets",
+                          style: TextStyle(fontSize: 20))),
+                  IconButton(
+                      onPressed: () {
+                        if (setCount > 0) {
+                          setState(() {
+                            setCount--;
+                          });
+                        }
+                      },
+                      icon: Icon(Icons.remove)),
+                  Text('$setCount', style: TextStyle(fontSize: 20)),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          setCount++;
+                        });
+                      },
+                      icon: Icon(Icons.add))
+                ],
+              ),
+
               // Exercise pause
               // Hierzu Number Picker pop up kreieren, dass ich dann auch
               // in der Exercise View wiederverwenden kann
-
-              // Set Count (Sollte mit Plus und minus links und rechts von der Zahl
-              // einfach einstellbar sein). Besser Sets hinzufügen und Entfernen
-              // Logik hier rein, nicht in die Exercise View
             ],
           )),
     );

@@ -152,12 +152,31 @@ class DBService {
 
     int workoutID = await db.insert('workout', workout.toMap());
 
+    Map<int, int> setCountMap = Map(); // Key -> exerciseID, value -> setCount
+
     if (exercises != null && workoutID != 0) {
       for (Exercise exercise in exercises) {
         exercise.workoutFK = workoutID;
-        await db.insert('exercise', exercise.toMap());
+        int exerciseID = await db.insert('exercise', exercise.toMap());
+
+        setCountMap[exerciseID] = exercise.setCount;
       }
     }
+
+    // Create all Sets
+    List<Set> setsW = [];
+    setCountMap.forEach((key, setCount) {
+      for (var i = 0; i < setCount; i++) {
+        db.insert(
+            'setW',
+            Set(
+                    exerciseFK: key,
+                    weight: 10 * setCount + 10, // to get a nice rising diagramm
+                    reps: 10,
+                    duration: 20)
+                .toMap());
+      }
+    });
 
     if (workoutID != 0) {
       return OPResult.Success;
@@ -186,7 +205,7 @@ class DBService {
   Future<OPResult> createSet(Set set) async {
     final Database db = await instance.database;
 
-    int returnedID = await db.insert('set', set.toMap());
+    int returnedID = await db.insert('setW', set.toMap());
 
     if (returnedID != 0) {
       set.id = returnedID;

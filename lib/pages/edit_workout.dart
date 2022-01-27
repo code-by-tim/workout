@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
+import 'package:workout/model/set.dart';
 import 'package:workout/model/workout.dart';
 import 'package:workout/state/exercise_editing_model.dart';
 import 'package:workout/state/session_model.dart';
@@ -253,7 +254,7 @@ class _EditWorkoutState extends State<EditWorkout> {
       }
 
       if (widget.workoutID < 0) {
-        //if workout is new
+        //If workout is new
         _workout.name = _titleController.text;
 
         List<Exercise> _exercises = [];

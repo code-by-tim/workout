@@ -106,4 +106,16 @@ class SessionModel extends ChangeNotifier {
     DBService.instance.deleteWorkout(workoutID);
     notifyListeners();
   }
+
+  /// Deletes the last set of this exercise and removes it from the model.
+  /// Only call this method from a point where the Exercise is in
+  /// the currentWorkout Workout!
+  /// Calls notifyListeners()
+  void deleteSet(int exerciseID) {
+    if (!currentWorkout.initializedSets) currentWorkout.initializeSets();
+    Exercise exercise = currentWorkout.exercises
+        .firstWhere((element) => element.id == exerciseID);
+    DBService.instance.deleteSet(exercise.sets.last.id!);
+    exercise.sets.removeLast();
+  }
 }
