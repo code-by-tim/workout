@@ -3,7 +3,6 @@ import 'package:workout/model/exercise.dart';
 
 class ExerciseEditingModel extends ChangeNotifier {
   late Exercise updatedExercise;
-  late int setCount;
 
   bool updateRequested = false;
 }

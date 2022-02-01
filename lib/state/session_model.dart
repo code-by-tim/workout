@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
 import 'package:workout/model/workout.dart';
+import 'package:workout/model/set.dart';
 
 class SessionModel extends ChangeNotifier {
   List<Workout> workouts = [];
@@ -80,13 +81,6 @@ class SessionModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Loads all Sets into the respective Workout Variable
-  Future initializeSets(int workoutID) async {
-    if (!workouts[workoutID].initializedSets) {
-      workouts[workoutID].initializeSets();
-    }
-  }
-
   /// Deletes the exercise from the db and removes it from the model.
   /// Only call this method from a point where the respective Exercise is in
   /// the currentWorkout Workout!
@@ -107,15 +101,57 @@ class SessionModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Deletes the last set of this exercise and removes it from the model.
+  /// Deletes the specified number of sets of this exercise and removes them from the model.
   /// Only call this method from a point where the Exercise is in
   /// the currentWorkout Workout!
   /// Calls notifyListeners()
-  void deleteSet(int exerciseID) {
+  void deleteSets(int exerciseID, int setAmount) {
     if (!currentWorkout.initializedSets) currentWorkout.initializeSets();
     Exercise exercise = currentWorkout.exercises
         .firstWhere((element) => element.id == exerciseID);
-    DBService.instance.deleteSet(exercise.sets.last.id!);
-    exercise.sets.removeLast();
+    for (var i = 0; i < setAmount; i++) {
+      DBService.instance.deleteSet(exercise.sets.last.id!);
+      exercise.sets.removeLast();
+    }
+    notifyListeners();
+  }
+
+  /// Creates the specified exercise and updates the model
+  /// The last call of this method should always pass isLastCall = true.
+  /// Otherwise the exercises are not reloaded from the db and the view is not updated.
+  void createExercise(Exercise exercise, {bool isLastCall = false}) {
+    DBService.instance.createExercise(exercise);
+    if (isLastCall) {
+      this.currentWorkout.initializeExercises();
+      this.currentWorkout.initializedSets = false;
+      notifyListeners();
+    }
+  }
+
+  /// Creates the specified amount of sets and updates the model.
+  /// Calls notifyListeners()
+  void createSets(int exerciseID, int setAmount) {
+    Set setW =
+        new Set(exerciseFK: exerciseID, weight: 50, reps: 10, duration: 20);
+    for (var i = 0; i < setAmount; i++) {
+      DBService.instance.createSet(setW);
+    }
+    this.currentWorkout.initializeSets();
+    notifyListeners();
+  }
+
+  /// Updates the exercise and reloads it in the model. If the setCount
+  /// differst from the actual amount of sets, then the amount of sets is adapted
+  void updateExercise(Exercise exercise) {
+    assert(currentWorkout.initializedSets);
+    int setDifference = exercise.setCount - exercise.sets.length;
+    if (setDifference > 0) {
+      this.createSets(exercise.id!, setDifference);
+    } else if (setDifference < 0) {
+      this.deleteSets(exercise.id!, setDifference.abs());
+    }
+    DBService.instance.updateExercise(exercise);
+    this.reloadExercise(exercise.id!);
+    notifyListeners();
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
-import 'package:workout/model/set.dart';
 import 'package:workout/model/workout.dart';
 import 'package:workout/state/exercise_editing_model.dart';
 import 'package:workout/state/session_model.dart';
@@ -278,17 +277,10 @@ class _EditWorkoutState extends State<EditWorkout> {
           if (pair.isNew) {
             // exercise newly created, not existend in DB
             DBService.instance.createExercise(pair.exercise);
-            int index = Provider.of<SessionModel>(context, listen: false)
-                .getWorkoutIndex(_workout.id!);
-            Provider.of<SessionModel>(context, listen: false)
-                .workouts[index]
-                .exercises
-                .add(pair.exercise);
           } else if (pair.wasModified) {
             // exercise exists in DB
-            DBService.instance.updateExercise(pair.exercise);
             Provider.of<SessionModel>(context, listen: false)
-                .reloadExercise(pair.exercise.id!);
+                .updateExercise(pair.exercise);
           }
         });
 

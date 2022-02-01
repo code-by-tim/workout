@@ -164,7 +164,6 @@ class DBService {
     }
 
     // Create all Sets
-    List<Set> setsW = [];
     setCountMap.forEach((key, setCount) {
       for (var i = 0; i < setCount; i++) {
         db.insert(
@@ -191,6 +190,16 @@ class DBService {
     final Database db = await instance.database;
 
     int returnedID = await db.insert('exercise', exercise.toMap());
+    for (var i = 0; i < exercise.setCount; i++) {
+      db.insert(
+          'setW',
+          Set(
+                  exerciseFK: returnedID,
+                  weight: 10 * i + 10, // to get a nice rising diagramm
+                  reps: 10,
+                  duration: 20)
+              .toMap());
+    }
 
     if (returnedID != 0) {
       exercise.id = returnedID;

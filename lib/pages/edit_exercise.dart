@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workout/db_service.dart';
 import 'package:workout/model/exercise.dart';
-import 'package:workout/model/set.dart';
 import 'package:workout/state/exercise_editing_model.dart';
 import 'package:workout/state/session_model.dart';
 
@@ -53,6 +52,7 @@ class _EditExerciseState extends State<EditExercise> {
       widget.tempExercise.name = widget.titleController.text;
       widget.tempExercise.description = widget.descriptionController.text;
       if (widget.safeToDBDirectly) {
+        // Above is true if called from the Exercise View
         DBService.instance.updateExercise(widget.tempExercise);
         Provider.of<SessionModel>(context, listen: false)
             .reloadExercise(widget.tempExercise.id!);
@@ -60,22 +60,14 @@ class _EditExerciseState extends State<EditExercise> {
         // Safe added Sets to DB or delete if Sets were removed
         int setDifference = setCount - widget.exerciseToUpdate.sets.length;
         if (setDifference > 0) {
-          Set setW = new Set(
-              exerciseFK: widget.exerciseToUpdate.id!,
-              weight: 50,
-              reps: 10,
-              duration: 20);
-          for (var i = 0; i < setDifference; i++) {
-            //Todo change createSet the sets to make a nice rising diagramm like in db_service.dart
-            DBService.instance.createSet(setW);
-          }
+          Provider.of<SessionModel>(context, listen: false)
+              .createSets(widget.exerciseToUpdate.id!, setDifference);
         } else if (setDifference < 0) {
-          for (var i = 0; i < setDifference.abs(); i++) {
-            Provider.of<SessionModel>(context, listen: false)
-                .deleteSet(widget.exerciseToUpdate.id!);
-          }
+          Provider.of<SessionModel>(context, listen: false)
+              .deleteSets(widget.exerciseToUpdate.id!, setDifference.abs());
         }
       } else {
+        // if not saved to DB directly
         widget.tempExercise.setCount = this.setCount;
         Provider.of<ExerciseEditingModel>(context, listen: false)
             .updatedExercise = widget.tempExercise;
